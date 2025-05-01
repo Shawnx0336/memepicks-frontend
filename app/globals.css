@@ -2,32 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Fonts & Base Styles */
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: #1A1A1A;
+  @apply bg-gradient-to-b from-[#1A1A1A] to-[#2A2A2A] text-white font-inter min-h-screen;
 }
 
-/* Glow Button Effects */
-.glow-button {
-  transition: box-shadow 0.3s ease;
-  box-shadow: 0 0 6px #39FF14;
-}
-.glow-button:hover {
-  box-shadow: 0 0 12px #39FF14, 0 0 24px #39FF14;
-}
-.glow-button-purple {
-  transition: box-shadow 0.3s ease;
-  box-shadow: 0 0 6px #C300FF;
-}
-.glow-button-purple:hover {
-  box-shadow: 0 0 12px #C300FF, 0 0 24px #C300FF;
+.card {
+  @apply bg-[#1E1E1E] rounded-xl p-4 shadow-lg hover:shadow-xl transition-shadow duration-300;
 }
 
-/* Neon Text Styles */
-.neon-green {
-  color: #39FF14;
+.button-primary {
+  @apply bg-primary-green text-white font-semibold py-2.5 px-5 rounded-lg transition-colors duration-200 hover:bg-[#00B07D] disabled:bg-disabled disabled:cursor-not-allowed;
 }
-.neon-purple {
-  color: #C300FF;
+
+.button-secondary {
+  @apply bg-transparent border border-secondary-purple text-secondary-purple font-semibold py-2 px-4 rounded-lg transition-colors duration-200 hover:bg-secondary-purple hover:text-white disabled:border-disabled disabled:text-disabled disabled:cursor-not-allowed;
+}
+
+.input-field {
+  @apply bg-[#1E1E1E] border border-[#4A4A4A] text-white rounded-lg p-3 w-full focus:outline-none focus:border-primary-green transition-colors duration-200;
+}
+
+.heat-tag {
+  @apply bg-[#FF6B00] text-white text-xs font-semibold px-2 py-1 rounded-full;
 }

@@ -19,64 +19,121 @@ export default function Modals() {
 
   return (
     <>
+      {/* Connect Wallet Modal */}
       {isConnectModalOpen && (
-        <motion.div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#2A2A2A] p-6 rounded-lg">
-            <h2 className="text-2xl text-white mb-4">Connect Wallet</h2>
-            {wallets.map((w) => (
-              <button
-                key={w.adapter.name}
-                className="glow-button w-full bg-[#C300FF] text-white py-2 rounded mb-2"
-                onClick={() => {
-                  select(w.adapter.name);
-                  setConnectModalOpen(false);
-                }}
-              >
-                {w.adapter.name}
-              </button>
-            ))}
-            <button
+        <motion.div
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          role="dialog"
+          aria-labelledby="connect-wallet-title"
+        >
+          <motion.div
+            className="bg-[#1E1E1E] p-5 rounded-xl w-full max-w-[90%] sm:max-w-sm"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <h2 id="connect-wallet-title" className="text-base font-semibold text-white mb-3">
+              Connect Wallet
+            </h2>
+            <div className="space-y-2">
+              {wallets.map((wallet) => (
+                <motion.button
+                  key={wallet.adapter.name}
+                  className="button-secondary w-full text-sm py-2"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    select(wallet.adapter.name);
+                    setConnectModalOpen(false);
+                  }}
+                  aria-label={`Connect with ${wallet.adapter.name} wallet`}
+                >
+                  {wallet.adapter.name}
+                </motion.button>
+              ))}
+            </div>
+            <motion.button
+              className="mt-3 text-text-secondary hover:text-white text-sm"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setConnectModalOpen(false)}
-              className="mt-4 text-sm text-[#CCCCCC]"
+              aria-label="Cancel wallet connection"
             >
               Cancel
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </motion.div>
       )}
 
+      {/* Submission Confirmation Modal */}
       {isSubmissionModalOpen && (
-        <motion.div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#2A2A2A] p-6 rounded-lg text-white">
-            <h2 className="text-2xl mb-4">Entry Submitted</h2>
-            {slip.picks.map((p) => (
-              <p key={p.propId}>
-                {p.token}: {p.description} - {p.choice}
+        <motion.div
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          role="dialog"
+          aria-labelledby="submission-title"
+        >
+          <motion.div
+            className="bg-[#1E1E1E] p-5 rounded-xl w-full max-w-[90%] sm:max-w-sm"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <h2 id="submission-title" className="text-base font-semibold text-white mb-3">
+              Slip Submitted
+            </h2>
+            <p className="text-text-secondary text-sm mb-3">Your picks are locked in!</p>
+            {slip.picks.map((pick) => (
+              <p key={pick.propId} className="text-sm text-white mb-1">
+                {pick.token}: {pick.choice}
               </p>
             ))}
-            <p className="mt-2">Wager: {slip.wager} SOL</p>
-            <button
+            <p className="text-sm text-primary-green mt-2">Wager: {slip.wager} SOL</p>
+            <motion.button
+              className="button-primary mt-3 w-full text-sm py-2"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setSubmissionModalOpen(false)}
-              className="glow-button mt-4 bg-[#39FF14] text-black py-2 px-4 rounded"
+              aria-label="Close submission confirmation"
             >
               Close
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </motion.div>
       )}
 
+      {/* Error Modal */}
       {isErrorModalOpen && (
-        <motion.div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#2A2A2A] p-6 rounded-lg text-white">
-            <h2 className="text-2xl mb-4">Error</h2>
-            <p>{errorMessage}</p>
-            <button
+        <motion.div
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          role="dialog"
+          aria-labelledby="error-title"
+        >
+          <motion.div
+            className="bg-[#1E1E1E] p-5 rounded-xl w-full max-w-[90%] sm:max-w-sm"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <h2 id="error-title" className="text-base font-semibold text-white mb-3">
+              Error
+            </h2>
+            <p className="text-text-secondary text-sm mb-3">{errorMessage}</p>
+            <motion.button
+              className="button-primary mt-3 w-full text-sm py-2"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => setErrorModalOpen(false)}
-              className="glow-button mt-4 bg-[#39FF14] text-black py-2 px-4 rounded"
+              aria-label="Close error message"
             >
               Close
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </motion.div>
       )}
     </>
