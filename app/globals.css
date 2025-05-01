@@ -1,26 +1,33 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Custom Fonts & Base Styles */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: #1A1A1A;
+}
+
+/* Glow Button Effects */
+.glow-button {
+  transition: box-shadow 0.3s ease;
+  box-shadow: 0 0 6px #39FF14;
+}
+.glow-button:hover {
+  box-shadow: 0 0 12px #39FF14, 0 0 24px #39FF14;
+}
+.glow-button-purple {
+  transition: box-shadow 0.3s ease;
+  box-shadow: 0 0 6px #C300FF;
+}
+.glow-button-purple:hover {
+  box-shadow: 0 0 12px #C300FF, 0 0 24px #C300FF;
+}
+
+/* Neon Text Styles */
+.neon-green {
+  color: #39FF14;
+}
+.neon-purple {
+  color: #C300FF;
 }
