@@ -1,4 +1,5 @@
 async function signIn() {
+console.log('SignIn triggered');
   try {
     const email = document.getElementById('email-signin').value;
     const password = document.getElementById('password-signin').value;
