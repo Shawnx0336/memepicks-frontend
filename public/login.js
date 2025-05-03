@@ -4,7 +4,8 @@ console.log('SignIn triggered');
     const email = document.getElementById('email-signin').value;
     const password = document.getElementById('password-signin').value;
 
-    const response = await fetch('http://137.184.104.153:5000/api/auth/signin', {
+    const response = await fetch('https://api.memepicks.fun/...
+', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),

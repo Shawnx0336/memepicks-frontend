@@ -25,7 +25,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   login: async (email, password) => {
     try {
-const res = await fetch('http://137.184.104.153:5000/api/auth/signup', {
+const res = await fetch('https://api.memepicks.fun/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -43,7 +43,7 @@ const res = await fetch('http://137.184.104.153:5000/api/auth/signup', {
 
   signup: async (email, password) => {
     try {
-const res = await fetch('http://137.184.104.153:5000/api/auth/signup', {
+const res = await fetch('https://api.memepicks.fun/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
