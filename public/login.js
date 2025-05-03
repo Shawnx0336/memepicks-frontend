@@ -1,8 +1,15 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const button = document.querySelector("#signInButton");
+  if (button) {
+    button.addEventListener("click", signIn);
+  }
+});
+
 async function signIn(event) {
   event.preventDefault();
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email-signin").value;
+  const password = document.getElementById("password-signin").value;
 
   try {
     const response = await fetch("https://api.memepicks.fun/api/auth/signin", {
@@ -14,11 +21,10 @@ async function signIn(event) {
     });
 
     const data = await response.json();
+    console.log("Signin Response:", data);
+
     if (response.ok) {
       alert("Signed in successfully!");
-      console.log("Token:", data.token);
-      // optionally store in localStorage
-      // localStorage.setItem('token', data.token);
     } else {
       alert(data.message || "Login failed");
     }
