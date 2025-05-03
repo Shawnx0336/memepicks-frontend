@@ -1,27 +1,29 @@
-async function signIn() {
-console.log('SignIn triggered');
-  try {
-    const email = document.getElementById('email-signin').value;
-    const password = document.getElementById('password-signin').value;
+async function signIn(event) {
+  event.preventDefault();
 
-    const response = await fetch('https://api.memepicks.fun/...
-', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    const response = await fetch("https://api.memepicks.fun/api/auth/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
     });
 
     const data = await response.json();
-
-    if (!response.ok) {
-      showToast(data.error || 'Sign-in failed.');
-      return;
+    if (response.ok) {
+      alert("Signed in successfully!");
+      console.log("Token:", data.token);
+      // optionally store in localStorage
+      // localStorage.setItem('token', data.token);
+    } else {
+      alert(data.message || "Login failed");
     }
-
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('isSignedIn', 'true');
-    showToast('Signed in successfully!');
   } catch (error) {
-    showToast('Sign-in failed.');
+    console.error("Error signing in:", error);
+    alert("Network or server error");
   }
 }
