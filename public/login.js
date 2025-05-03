@@ -14,11 +14,15 @@ document.addEventListener("DOMContentLoaded", () => {
   if (token) {
     document.querySelector("#signInButton")?.classList.add("hidden");
     document.querySelector("#signUpButton")?.classList.add("hidden");
+    // Update user interface or navbar, etc.
   }
 });
 
 function closeAuthModal() {
-  document.querySelectorAll(".modal-auth").forEach(modal => modal.classList.add("hidden"));
+  document.querySelectorAll(".modal-auth").forEach(modal => {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  });
 }
 
 async function signIn(event) {
@@ -43,9 +47,7 @@ async function signIn(event) {
       localStorage.setItem("token", data.token);
       alert("Signed in successfully!");
       closeAuthModal();
-      setTimeout(() => {
-        location.reload();
-      }, 100);
+      setTimeout(() => location.reload(), 200);
     } else {
       alert(data.message || "Login failed");
     }
@@ -67,7 +69,7 @@ async function signUp(event) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password })
     });
 
     const data = await response.json();
@@ -77,9 +79,7 @@ async function signUp(event) {
       localStorage.setItem("token", data.token);
       alert("Account created!");
       closeAuthModal();
-      setTimeout(() => {
-        location.reload();
-      }, 100);
+      setTimeout(() => location.reload(), 200);
     } else {
       alert(data.message || "Signup failed");
     }

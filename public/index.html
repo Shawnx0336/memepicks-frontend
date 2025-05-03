@@ -1277,50 +1277,37 @@
   </nav>
 
   <!-- Modals -->
-<div id="signInModal" class="modal-auth fixed inset-0 flex items-end justify-center z-50 hidden">
-    <div class="modal-container" :class="{ 'open': activeModal === 'signInModal' }">
-      <div class="modal" :class="{ 'open': activeModal === 'signInModal' }">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-base font-semibold">Sign In</h3>
-          <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('signInModal')" aria-label="Close sign in modal">✕</button>
-        </div>
-        <div class="space-y-4">
-          <div>
-            <label for="email-signin" class="text-sm text-[#B0B0B0] mb-2 block">Email</label>
-            <input id="email-signin" type="email" class="input-field text-sm" placeholder="Enter your email" aria-label="Email address">
-          </div>
-          <div>
-            <label for="password-signin" class="text-sm text-[#B0B0B0] mb-2 block">Password</label>
-            <input id="password-signin" type="password" class="input-field text-sm" placeholder="Enter your password" aria-label="Password">
-          </div>
-          <a href="#" class="text-sm text-[#7B61FF] hover:underline">Forgot Password?</a>
-        </div>
-<button id="signInButton" class="button-primary w-full mt-4" aria-label="Sign In">Sign In</button>
-      </div>
+<div id="signInModal" class="modal-auth fixed inset-0 flex items-center justify-center z-50 hidden">
+  <div class="bg-gray-900 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Sign In</h2>
+      <button onclick="closeAuthModal()" aria-label="Close modal">×</button>
     </div>
-  </div>
+    <label class="block text-sm font-medium mb-1" for="email-signin">Email</label>
+    <input id="email-signin" type="email" class="w-full mb-4 p-2 rounded bg-gray-800 text-white" placeholder="Enter your email">
 
-<div id="signUpModal" class="modal-auth fixed inset-0 flex items-end justify-center z-50 hidden">
-    <div class="modal-container" :class="{ 'open': activeModal === 'signUpModal' }">
-      <div class="modal" :class="{ 'open': activeModal === 'signUpModal' }">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-base font-semibold">Sign Up</h3>
-          <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('signUpModal')" aria-label="Close sign up modal">✕</button>
-        </div>
-        <div class="space-y-4">
-          <div>
-            <label for="email-signup" class="text-sm text-[#B0B0B0] mb-2 block">Email</label>
-            <input id="email-signup" type="email" class="input-field text-sm" placeholder="Enter your email" aria-label="Email address">
-          </div>
-          <div>
-            <label for="password-signup" class="text-sm text-[#B0B0B0] mb-2 block">Password</label>
-            <input id="password-signup" type="password" class="input-field text-sm" placeholder="Create a password" aria-label="Password">
-          </div>
-        </div>
-<button id="signUpButton" class="button-primary w-full mt-4" aria-label="Sign Up">Sign Up</button>
-      </div>
-    </div>
+    <label class="block text-sm font-medium mb-1" for="password-signin">Password</label>
+    <input id="password-signin" type="password" class="w-full mb-6 p-2 rounded bg-gray-800 text-white" placeholder="Enter your password">
+
+    <button id="signInButton" class="w-full py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded">Sign In</button>
   </div>
+</div>
+
+<div id="signUpModal" class="modal-auth fixed inset-0 flex items-center justify-center z-50 hidden">
+  <div class="bg-gray-900 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold">Sign Up</h2>
+      <button onclick="closeAuthModal()" aria-label="Close modal">×</button>
+    </div>
+    <label class="block text-sm font-medium mb-1" for="email-signup">Email</label>
+    <input id="email-signup" type="email" class="w-full mb-4 p-2 rounded bg-gray-800 text-white" placeholder="Enter your email">
+
+    <label class="block text-sm font-medium mb-1" for="password-signup">Password</label>
+    <input id="password-signup" type="password" class="w-full mb-6 p-2 rounded bg-gray-800 text-white" placeholder="Create a password">
+
+    <button id="signUpButton" class="w-full py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded">Sign Up</button>
+  </div>
+</div>
 
   <div id="walletModal" class="fixed inset-0 flex items-end justify-center z-50 hidden">
     <div class="modal-container" :class="{ 'open': activeModal === 'walletModal' }">
