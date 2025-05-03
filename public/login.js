@@ -19,8 +19,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function closeAuthModal() {
-console.log("Closing modal..."); // <-- Add this
-  document.querySelectorAll(".modal-auth").forEach(modal => modal.classList.add("hidden"));
+  document.querySelectorAll(".modal-auth").forEach(modal => {
+    modal.classList.add("hidden");
+    modal.style.display = "none"; // ensure display is also off
+  });
+
+  // Reset the form fields too
+  const inputs = document.querySelectorAll(".modal-auth input");
+  inputs.forEach(input => input.value = "");
 }
 
 async function signIn(event) {
@@ -45,6 +51,9 @@ async function signIn(event) {
       localStorage.setItem("token", data.token);
       alert("Signed in successfully!");
       closeAuthModal();
+setTimeout(() => {
+  }, 100);
+}
       location.reload(); // Refresh UI to reflect login
     } else {
       alert(data.message || "Login failed");
