@@ -14,19 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (token) {
     document.querySelector("#signInButton")?.classList.add("hidden");
     document.querySelector("#signUpButton")?.classList.add("hidden");
-    // Optionally update UI with user info here
   }
 });
 
 function closeAuthModal() {
-  document.querySelectorAll(".modal-auth").forEach(modal => {
-    modal.classList.add("hidden");
-    modal.style.display = "none"; // ensure display is also off
-  });
-
-  // Reset the form fields too
-  const inputs = document.querySelectorAll(".modal-auth input");
-  inputs.forEach(input => input.value = "");
+  document.querySelectorAll(".modal-auth").forEach(modal => modal.classList.add("hidden"));
 }
 
 async function signIn(event) {
@@ -51,10 +43,9 @@ async function signIn(event) {
       localStorage.setItem("token", data.token);
       alert("Signed in successfully!");
       closeAuthModal();
-setTimeout(() => {
-  }, 100);
-}
-      location.reload(); // Refresh UI to reflect login
+      setTimeout(() => {
+        location.reload();
+      }, 100);
     } else {
       alert(data.message || "Login failed");
     }
@@ -86,7 +77,9 @@ async function signUp(event) {
       localStorage.setItem("token", data.token);
       alert("Account created!");
       closeAuthModal();
-      location.reload(); // Refresh UI to reflect login
+      setTimeout(() => {
+        location.reload();
+      }, 100);
     } else {
       alert(data.message || "Signup failed");
     }
