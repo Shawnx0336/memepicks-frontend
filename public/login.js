@@ -1,3 +1,23 @@
+// ✅ Privy wallet login (Placed first)
+document.addEventListener('DOMContentLoaded', async () => {
+  if (window.privy) {
+    const { connect } = await window.privy.init({
+      onSuccess: (wallet) => {
+        localStorage.setItem('walletAddress', wallet.address);
+        location.reload(); // Refresh to reflect login
+      },
+    });
+
+    // Show login UI inside #privy-login
+    if (document.getElementById('privy-login')) {
+      connect('#privy-login');
+    }
+  } else {
+    console.error('Privy SDK not loaded.');
+  }
+});
+
+// ✅ Existing email/password login logic
 document.addEventListener("DOMContentLoaded", () => {
   const signInBtn = document.querySelector("#signInButton");
   const signUpBtn = document.querySelector("#signUpButton");
@@ -14,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (token) {
     document.querySelector("#signInButton")?.classList.add("hidden");
     document.querySelector("#signUpButton")?.classList.add("hidden");
-    // Update user interface or navbar, etc.
+    // Optionally update UI to show "Logged in"
   }
 });
 
