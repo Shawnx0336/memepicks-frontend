@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="icon" href="/favicon.ico" type="image/x-icon" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>MemePicks – Meme Coin Prop Betting</title>
@@ -9,7 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.93.0/lib/index.iife.min.js"></script>
   <!-- Privy SDK loaded early in head -->
-  <script src="https://sdk.privy.io/privy.js" async></script>
+<script async src="https://cdn.privy.io/privy.js"></script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -790,7 +791,7 @@
       <p
         class="text-xs text-[#B0B0B0]"
         x-show="walletAddress"
-        x-text="walletAddress && walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4)">
+x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4) : ''"
       </p>
     </div>
     <button
