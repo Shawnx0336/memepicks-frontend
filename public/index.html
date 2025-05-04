@@ -25,11 +25,11 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
-    if (window.Privy) {
-//         onSuccess: (user) => {
-//           console.log("Connected:", user);
-//           localStorage.setItem("walletAddress", user.wallet.address);
-//           location.reload();
+//     if (window.Privy) {
+// //         onSuccess: (user) => {
+// //           console.log("Connected:", user);
+// //           localStorage.setItem("walletAddress", user.wallet.address);
+// //           location.reload();
 //         },
         onError: (err) => {
           console.error("Privy error:", err);
@@ -749,670 +749,670 @@
   },
 
   connectWallet(walletType) {
-    if (window.Privy && window.Privy.show) {
-      window.Privy.show();
-    } else {
-      showToast('Wallet connection not available.');
-    }
-  },
-
-  disconnectWallet() {
-    this.walletAddress = null;
-    this.walletBalance = null;
-    showToast('Wallet disconnected.');
-  }
-}" @click.debounce.500ms.self="activeModal && closeAllModals()">
-
-  <!-- Drawer Menu -->
-<button id="privy-login" class="button-auth text-sm py-2 px-3">
-  Connect Wallet
-</button>  
-<div class="overlay" :class="{ 'open': showDrawer }" @click="showDrawer = false"></div>
-  <div class="drawer" :class="{ 'open': showDrawer }">
-    <div class="p-4">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold text-[#7B61FF]">MemePicks</h2>
-        <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="showDrawer = false" aria-label="Close drawer">✕</button>
-      </div>
-<div class="space-y-2">
-<!-- Connect Wallet (Privy login) -->
-<div x-show="!walletAddress">
-  <button
-    id="privy-login"
-    class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"
-    @click="showDrawer = false"
-    aria-label="Connect Wallet">
-    Connect Wallet
-  </button>
-</div>
-
-<!-- Disconnect Wallet (only if connected) -->
-<div x-show="walletAddress">
-  <button
-    class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"
-    @click="showDrawer = false; signOut()"
-    aria-label="Disconnect Wallet">
-    Disconnect Wallet
-  </button>
-</div>
-
-<!-- Sidebar Menu -->
-<div class="space-y-2 mt-6">
-
-  <!-- Deposit Button -->
-  <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('depositModal')" aria-label="Deposit">
-    Deposit
-  </button>
-
-  <!-- Withdraw Button -->
-  <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('withdrawModal')" aria-label="Withdraw">
-    Withdraw
-  </button>
-
-  <!-- Game Link -->
-  <a href="/game" class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]">
-    Game
-  </a>
-
-  <!-- FAQ Link -->
-  <a href="/faq" class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]">
-    FAQ
-  </a>
-
-</div>
-
-  <!-- Header -->
-<header class="fixed top-0 left-0 w-full bg-[#1A1A1A] z-20 header">
-  <div class="header-left">
-    <button class="hamburger" @click="showDrawer = true" aria-label="Open menu">☰</button>
-  </div>
-  <h1 class="logo">MemePicks</h1>
-  <div class="header-right flex items-center space-x-4 pr-4">
-    <div>
-      <p
-        class="text-xs text-[#B0B0B0]"
-        x-show="walletAddress"
-x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4) : ''"
-      </p>
-    </div>
-    <button
-      class="button-auth text-sm py-2 px-3"
-      @click="walletAddress ? disconnectWallet() : openModal('walletModal')"
-      aria-label="Connect or Disconnect Wallet">
-      <span x-text="walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'"></span>
-    </button>
-  </div>
-</header>
-
-  <!-- Sticky Tabs -->
-  <div class="sticky-tabs" role六"tablist">
-    <div class="tabs" x-ref="tabs">
-      <button :class="{ 'tab-button active': tab === 'trending', 'tab-button': tab !== 'trending' }" @click="tab = 'trending'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'trending'" :tabindex="tab === 'trending' ? 0 : -1">Trending</button>
-      <button :class="{ 'tab-button active': tab === 'marketcap', 'tab-button': tab !== 'marketcap' }" @click="tab = 'marketcap'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'marketcap'" :tabindex="tab === 'marketcap' ? 0 : -1">MCap</button>
-      <button :class="{ 'tab-button active': tab === 'volume', 'tab-button': tab !== 'volume' }" @click="tab = 'volume'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'volume'" :tabindex="tab === 'volume' ? 0 : -1">Volume</button>
-      <button :class="{ 'tab-button active': tab === 'headtohead', 'tab-button': tab !== 'headtohead' }" @click="tab = 'headtohead'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'headtohead'" :tabindex="tab === 'headtohead' ? 0 : -1">H2H</button>
-      <button :class="{ 'tab-button active': tab === 'memefactor', 'tab-button': tab !== 'memefactor' }" @click="tab = 'memefactor'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'memefactor'" :tabindex="tab === 'memefactor' ? 0 : -1">Meme Factor</button>
-      <button :class="{ 'tab-button active': tab === 'expiring', 'tab-button': tab !== 'expiring' }" @click="tab = 'expiring'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'expiring'" :tabindex="tab === 'expiring' ? 0 : -1">Expiring</button>
-    </div>
-  </div>
-
-  <!-- Slip Preview Banner -->
-  <div x-show="slip.picks.length" class="fixed w-full bg-[#1E1E1E] text-sm p-2 text-center z-20 slip-preview" :class="{ 'visible': slip.picks.length }" style="bottom: calc(56px + env(safe-area-inset-bottom) + 8px + 56px);">
-    <span x-text="`${slip.picks.length} Picks – Potential: ${(slip.wager * multipliers[slip.picks.length] || 0).toFixed(2)} SOL`"></span>
-  </div>
-
-  <!-- Main Content -->
-  <main class="main-content" :class="{ 'slip-tray-open': showSlipTray }" x-transition:enter="fade-in" x-transition:leave="fade-in">
-    <!-- Trending Tab -->
-    <div x-show="tab === 'trending'" class="fade-in" role="tabpanel" id="trending-panel">
-      <div id="trending-props" class="max-w-xl mx-auto">
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/nutz.png" alt="$NUTZ logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$NUTZ <span class="badge badge-hot">Hot</span></h3>
-              <p class="text-sm">Will $NUTZ hit $100K MC in 6 hours?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="nutz-001" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $NUTZ">Yes</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="nutz-001" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $NUTZ">No</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>72% picked Yes</p>
-              <p>MC: $73K · Volume: $12K</p>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/moonshot.png" alt="$MOONSHOT logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$MOONSHOT <span class="badge badge-new">New</span></h3>
-              <p class="text-sm">Will $MOONSHOT reach 500 buys by 10PM EST?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="moon-003" data-option="Over" @click="addToSlip($event)" aria-label="Pick Over for $MOONSHOT">Over</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="moon-003" data-option="Under" @click="addToSlip($event)" aria-label="Pick Under for $MOONSHOT">Under</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>58% picked Over</p>
-              <p>MC: $120K · Volume: $20K</p>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/wen.png" alt="$WEN logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$WEN</h3>
-              <p class="text-sm">Will $WEN gain 1000 holders by midnight?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-004" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $WEN">Yes</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-004" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $WEN">No</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>65% picked Yes</p>
-              <p>MC: $200K · Volume: $80K</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Market Cap Tab -->
-    <div x-show="tab === 'marketcap'" class="fade-in" role="tabpanel" id="marketcap-panel">
-      <div id="marketcap-props" class="max-w-xl mx-auto">
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/pepe.png" alt="$PEPE logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$PEPE</h3>
-              <p class="text-sm">Will $PEPE hit $1M MC today?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="pepe-001" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $PEPE">Yes</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="pepe-001" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $PEPE">No</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>65% picked Yes</p>
-              <p>MC: $900K · Volume: $40K</p>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/wagmi.png" alt="$WAGMI logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$WAGMI</h3>
-              <p class="text-sm">Will $WAGMI hit $2M MC by tomorrow?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wagmi-002" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $WAGMI">Yes</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wagmi-002" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $WAGMI">No</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>60% picked Yes</p>
-              <p>MC: $1.5M · Volume: $60K</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Volume Tab -->
-    <div x-show="tab === 'volume'" class="fade-in" role="tabpanel" id="volume-panel">
-      <div id="volume-props" class="max-w-xl mx-auto">
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/wen.png" alt="$WEN logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$WEN</h3>
-              <p class="text-sm">Will $WEN trade over 100K in 6h?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-001" data-option="Over" @click="addToSlip($event)" aria-label="Pick Over for $WEN">Over</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-001" data-option="Under" @click="addToSlip($event)" aria-label="Pick Under for $WEN">Under</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>55% picked Over</p>
-              <p>MC: $200K · Volume: $80K</p>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/milk.png" alt="$MILK logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$MILK</h3>
-              <p class="text-sm">Will $MILK trade over 50K by midnight?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="milk-002" data-option="Over" @click="addToSlip($event)" aria-label="Pick Over for $MILK">Over</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="milk-002" data-option="Under" @click="addToSlip($event)" aria-label="Pick Under for $MILK">Under</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>48% picked Over</p>
-              <p>MC: $45K · Volume: $40K</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Head-to-Head Tab -->
-    <div x-show="tab === 'headtohead'" class="fade-in" role="tabpanel" id="headtohead-panel">
-      <div id="headtohead-props" class="max-w-xl mx-auto">
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/dogwifhat.png" alt="$DOGWIFHAT logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$DOGWIFHAT vs $SAMO</h3>
-              <p class="text-sm">Which has higher 1h buys?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="dogwifhat-samo-001" data-option="$DOGWIFHAT" @click="addToSlip($event)" aria-label="Pick $DOGWIFHAT">$DOGWIFHAT</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="dogwifhat-samo-001" data-option="$SAMO" @click="addToSlip($event)" aria-label="Pick $SAMO">$SAMO</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>53% picked $DOGWIFHAT</p>
-              <p>MC: $500K · Volume: $50K</p>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/nutz.png" alt="$NUTZ logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$NUTZ vs $MILK</h3>
-              <p class="text-sm">Which has higher 24h volume?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="nutz-milk-002" data-option="$NUTZ" @click="addToSlip($event)" aria-label="Pick $NUTZ">$NUTZ</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="nutz-milk-002" data-option="$MILK" @click="addToSlip($event)" aria-label="Pick $MILK">$MILK</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>60% picked $NUTZ</p>
-              <p>MC: $73K · Volume: $12K</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Meme Factor Tab -->
-    <div x-show="tab === 'memefactor'" class="fade-in" role="tabpanel" id="memefactor-panel">
-      <div id="memefactor-props" class="max-w-xl mx-auto">
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/sneed.png" alt="$SNEED logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$SNEED</h3>
-              <p class="text-sm">Will $SNEED trend on Twitter today?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="sneed-001" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $SNEED">Yes</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="sneed-001" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $SNEED">No</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>60% picked Yes</p>
-              <p>MC: $30K · Volume: $5K</p>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/moonshot.png" alt="$MOONSHOT logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$MOONSHOT</h3>
-              <p class="text-sm">Will $MOONSHOT get meme’d by a top account?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="moonshot-002" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $MOONSHOT">Yes</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="moonshot-002" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $MOONSHOT">No</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>45% picked Yes</p>
-              <p>MC: $120K · Volume: $20K</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Expiring Tab -->
-    <div x-show="tab === 'expiring'" class="fade-in" role="tabpanel" id="expiring-panel">
-      <div id="expiring-props" class="max-w-xl mx-auto">
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/wen.png" alt="$WEN logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$WEN <span class="badge badge-expiring">Expiring Soon</span></h3>
-              <p class="text-sm">Will $WEN pump 20% in 30 min?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-002" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $WEN">Yes</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-002" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $WEN">No</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>50% picked Yes</p>
-              <p>MC: $200K · Volume: $80K</p>
-            </div>
-            <p class="text-xs text-[#FFD700]">Expires in 28m</p>
-          </div>
-        </div>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/dogwifhat.png" alt="$DOGWIFHAT logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$DOGWIFHAT <span class="badge badge-expiring">Expiring Soon</span></h3>
-              <p class="text-sm">Will $DOGWIFHAT surge 15% in 15 min?</p>
-            </div>
-          </div>
-          <div class="flex justify-between items-center gap-2">
-            <div class="flex space-x-2">
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="dogwifhat-005" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $DOGWIFHAT">Yes</button>
-              <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="dogwifhat-005" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $DOGWIFHAT">No</button>
-            </div>
-          </div>
-          <div class="stats">
-            <div class="flex justify-between text-xs text-[#B0B0B0]">
-              <p>52% picked Yes</p>
-              <p>MC: $500K · Volume: $50K</p>
-            </div>
-            <p class="text-xs text-[#FFD700]">Expires in 14m</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- My Picks Tab -->
-    <div x-show="tab === 'mypicks'" class="fade-in" role="tabpanel" id="mypicks-panel">
-      <div id="mypicks-props" class="max-w-xl mx-auto">
-        <h2 class="text-lg font-semibold mb-2">📜 Pick History</h2>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/nutz.png" alt="$NUTZ logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$NUTZ: Yes</h3>
-              <p class="text-sm">Hit $100K MC in 6h</p>
-              <p class="text-[#7B61FF] text-xs mt-1">Won: +2.5 SOL</p>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/moonshot.png" alt="$MOONSHOT logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$MOONSHOT: Over</h3>
-              <p class="text-sm">Reach 500 buys by 10PM EST</p>
-              <p class="text-[#FF0000] text-xs mt-1">Lost: -1.0 SOL</p>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="prop-content">
-            <img src="tokens/pepe.png" alt="$PEPE logo">
-            <div class="flex-1">
-              <h3 class="text-base font-bold">$PEPE: Yes</h3>
-              <p class="text-sm">Hit $1M MC today</p>
-              <p class="text-[#7B61FF] text-xs mt-1">Won: +3.2 SOL</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Leaderboard Tab -->
-    <div x-show="tab === 'leaderboard'" class="fade-in" role="tabpanel" id="leaderboard-panel">
-      <div id="leaderboard-content" class="max-w-xl mx-auto">
-        <div class="card">
-          <p class="text-sm font-semibold">Top Winners (Daily)</p>
-          <div class="flex items-center space-x-2 mt-2 glow">
-            <img src="tokens/nft1.png" alt="NFT avatar" class="w-6 h-6 rounded-full">
-            <p class="text-[#B0B0B0] text-xs flex-1">1. 4xd5...0eF2 - 4.7 SOL</p>
-          </div>
-          <div class="flex items-center space-x-2 mt-1">
-            <img src="tokens/nft2.png" alt="NFT avatar" class="w-6 h-6 rounded-full">
-            <p class="text-[#B0B0B0] text-xs flex-1">2. 7G2A...9D1c - 3.2 SOL</p>
-          </div>
-          <div class="flex items-center space-x-2 mt-1">
-            <img src="tokens/nft3.png" alt="NFT avatar" class="w-6 h-6 rounded-full">
-            <p class="text-[#B0B0B0] text-xs flex-1">3. 9T5Q...1X7N - 2.5 SOL</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Help Tab -->
-    <div x-show="tab === 'help'" class="fade-in" role="tabpanel" id="help-panel">
-      <div id="help-content" class="max-w-xl mx-auto">
-        <div class="card p-6">
-          <h2 class="text-lg font-semibold mb-4">Help & Support</h2>
-          <div class="space-y-6">
-            <div>
-              <h3 class="text-sm font-semibold mb-2">FAQs</h3>
-              <div class="space-y-4">
-                <div>
-                  <p class="text-xs text-[#B0B0B0] font-semibold">Q: How do I place a bet?</p>
-                  <p class="text-xs text-[#B0B0B0]">A: Select 2–5 picks from the tabs, set a wager (0.1–10 SOL), and submit your slip.</p>
-                </div>
-                <div>
-                  <p class="text-xs text-[#B0B0B0] font-semibold">Q: What wallets are supported?</p>
-                  <p class="text-xs text-[#B0B0B0]">A: We support Phantom and Solflare wallets.</p>
-                </div>
-                <div>
-                  <p class="text-xs text-[#B0B0B0] font-semibold">Q: How are winnings calculated?</p>
-                  <p class="text-xs text-[#B0B0B0]">A: Winnings are based on your wager and the multiplier for the number of picks (2–5).</p>
-                </div>
-              </div>
-            </div>
-            <div>
-              <h3 class="text-sm font-semibold mb-2">Get in Touch</h3>
-              <a href="https://discord.com" target="_blank" class="block text-sm text-[#7B61FF] hover:underline mb-2" aria-label="Join Discord">Join our Discord</a>
-              <a href="mailto:support@memepicks.com" class="block text-sm text-[#7B61FF] hover:underline" aria-label="Contact Support">Contact Support</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Floating Slip Button (FAB) -->
-  <button id="slip-tray-trigger" class="fab" @click="toggleSlipTray()" aria-label="Open entry slip">
-    <span>Slip</span>
-    <span id="pick-count" class="badge" x-text="slip.picks.length"></span>
-  </button>
-
-  <!-- Entry Slip (Mobile Tray) -->
-  <div id="slip-tray" class="slip-tray" :class="{ 'open': showSlipTray }">
-    <div class="flex justify-between items-center mb-3">
-      <h3 class="text-base font-semibold">Your Slip</h3>
-      <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="showSlipTray = false" aria-label="Close entry slip">✕</button>
-    </div>
-    <div id="slip-picks-mobile" class="space-y-2 mb-4">
-      <template x-if="slip.picks.length === 0">
-        <p class="text-[#B0B0B0] text-sm">Add picks to start.</p>
-      </template>
-      <template x-for="pick in slip.picks" :key="pick.propId">
-        <div class="bg-[#2A2A2A] p-2 rounded-lg flex justify-between items-center">
-          <div>
-            <p class="text-xs font-semibold" x-text="pick.token"></p>
-            <p class="text-xs text-[#B0B0B0]" x-text="pick.description"></p>
-            <p class="text-xs text-[#7B61FF]" x-text="pick.choice"></p>
-          </div>
-          <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="removePick(pick.propId)" :aria-label="'Remove ' + pick.token + ' prediction from slip'">✕</button>
-        </div>
-      </template>
-    </div>
-    <div class="mb-4">
-      <label for="wager-mobile" class="text-xs text-[#B0B0B0] mb-2 block">Wager (SOL)</label>
-      <input id="wager-mobile" type="number" step="0.1" min="0.1" max="10" class="input-field text-sm" placeholder="0.1–10 SOL" aria-label="Wager amount in SOL (0.1 to 10)" @input="updateSlip()">
-    </div>
-    <div id="payout-mobile" class="flex justify-between text-xs mb-4" :class="{ 'hidden': slip.picks.length < 2 }">
-      <p class="text-[#B0B0B0]">Potential Payout:</p>
-      <p class="text-[#7B61FF]" x-text="(slip.wager * multipliers[slip.picks.length] || 0).toFixed(2) + ' SOL'"></p>
-    </div>
-    <button class="button-primary w-full text-sm py-2" :disabled="!isValidSlip()" @click="submitSlip()" aria-label="Submit entry slip">Submit Slip</button>
-    <p class="text-[#B0B0B0] text-xs mt-3">Balance: <span x-text="walletBalance !== null ? walletBalance.toFixed(2) : 'Loading...'"></span> SOL</p>
-  </div>
-
-  <!-- Fixed Bottom Nav -->
-  <nav class="bottom-nav">
-    <button :class="{ 'active': tab === 'trending' }" @click="tab = 'trending'; showSlipTray = false; closeAllModals()" aria-label="Home">
-      <span class="icon">🏠</span>
-      <span class="label">Home</span>
-    </button>
-    <button :class="{ 'active': tab === 'mypicks' }" @click="tab = 'mypicks'; showSlipTray = false; closeAllModals()" aria-label="My Picks">
-      <span class="icon">📊</span>
-      <span class="label">My Picks</span>
-    </button>
-    <button :class="{ 'active': tab === 'leaderboard' }" @click="tab = 'leaderboard'; showSlipTray = false; closeAllModals()" aria-label="Leaderboard">
-      <span class="icon">🏆</span>
-      <span class="label">Leaders</span>
-    </button>
-    <button :class="{ 'active': tab === 'help' }" @click="tab = 'help'; showSlipTray = false; closeAllModals()" aria-label="Help">
-      <span class="icon">❓</span>
-      <span class="label">Help</span>
-    </button>
-  </nav>
-
-  <!-- Modals -->
-<div id="walletModal" x-show="modals.walletModal" class="fixed inset-0 flex items-end justify-center z-50">
-  <div class="modal-container" :class="{ 'open': modals.walletModal }">
-    <div class="modal bg-white text-black rounded-t-lg p-6 shadow-lg w-full">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-base font-semibold">Connect Wallet</h3>
-        <button class="text-gray-400 hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('walletModal')" aria-label="Close wallet modal">✕</button>
-      </div>
-      <div id="privy-login" class="w-full"></div>
-      <button class="button-secondary w-full text-sm py-2 mt-4" @click="closeModal('walletModal')" aria-label="Close wallet modal">Cancel</button>
-    </div>
-  </div>
-</div>
-
-    <div class="space-y-3">
-      <button @click="connectWallet('phantom')" class="flex items-center gap-3 w-full px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-100">
-        <img src="/icons/phantom.png" alt="Phantom Logo" class="w-6 h-6" />
-        <span>Connect with Phantom</span>
-      </button>
-
-      <button @click="connectWallet('solflare')" class="flex items-center gap-3 w-full px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-100">
-        <img src="/icons/solflare.png" alt="Solflare Logo" class="w-6 h-6" />
-        <span>Connect with Solflare</span>
-      </button>
-    </div>
-
-    <button class="w-full mt-6 text-center text-sm text-gray-500 hover:text-gray-700" @click="closeModal('walletModal')" aria-label="Cancel">Cancel</button>
-  </div>
-</div>
-
-  <div id="helpModal" x-show="modals.helpModal" x-ref="helpModal" class="fixed inset-0 flex items-end justify-center z-50">
-    <div class="modal-container" :class="{ 'open': modals.helpModal }">
-      <div class="modal" :class="{ 'open': modals.helpModal }">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-base font-semibold">Help & Support</h3>
-          <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('helpModal')" aria-label="Close help modal">✕</button>
-        </div>
-        <div class="space-y-3">
-          <a href="#" class="block text-sm text-[#B0B0B0] hover:text-[#7B61FF]" aria-label="Help Center">Help Center</a>
-          <a href="#" class="block text-sm text-[#B0B0B0] hover:text-[#7B61FF]" aria-label="Responsible Betting">Responsible Betting</a>
-          <a href="https://discord.com" target="_blank" class="block text-sm text-[#B0B0B0] hover:text-[#7B61FF]" aria-label="Join Discord">Join our Discord</a>
-          <a href="mailto:support@memepicks.com" class="block text-sm text-[#B0B0B0] hover:text-[#7B61FF]" aria-label="Contact Support">Contact Support</a>
-        </div>
-        <button class="button-primary w-full text-sm py-2 mt-4" @click="closeModal('helpModal')" aria-label="Close help modal">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="modal" x-show="modals.modal" x-ref="modal" class="fixed inset-0 flex items-end justify-center z-50">
-    <div class="modal-container" :class="{ 'open': modals.modal }">
-      <div class="modal" :class="{ 'open': modals.modal }">
-        <h3 id="modal-title" class="text-base font-semibold mb-3"></h3>
-        <p id="modal-message" class="text-[#B0B0B0] text-sm mb-4"></p>
-        <button class="button-primary w-full text-sm py-2" @click="closeModal('modal')" aria-label="Close modal">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast Notification Script -->
-  <script>
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    }
-
-
-
-  });
-
-
-  <!-- Privy Initialization Script -->
-<script>
-  document.addEventListener('DOMContentLoaded', async () => {
-    if (window.Privy) {
-      });
-
-      // Example: Log in when button is clicked
-      const loginBtn = document.getElementById("privy-login");
-      if (loginBtn) {
-        loginBtn.addEventListener("click", async () => {
-          try {
-            const user = await client.auth.login();
-            console.log("Logged in as:", user);
-            localStorage.setItem("walletAddress", user.wallet.address);
-            location.reload();
+//     if (window.Privy && window.Privy.show) {
+//       window.Privy.show();
+//     } else {
+//       showToast('Wallet connection not available.');
+//     }
+//   },
+// 
+//   disconnectWallet() {
+//     this.walletAddress = null;
+//     this.walletBalance = null;
+//     showToast('Wallet disconnected.');
+//   }
+// }" @click.debounce.500ms.self="activeModal && closeAllModals()">
+// 
+//   <!-- Drawer Menu -->
+// <button id="privy-login" class="button-auth text-sm py-2 px-3">
+//   Connect Wallet
+// </button>  
+// <div class="overlay" :class="{ 'open': showDrawer }" @click="showDrawer = false"></div>
+//   <div class="drawer" :class="{ 'open': showDrawer }">
+//     <div class="p-4">
+//       <div class="flex justify-between items-center mb-4">
+//         <h2 class="text-lg font-semibold text-[#7B61FF]">MemePicks</h2>
+//         <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="showDrawer = false" aria-label="Close drawer">✕</button>
+//       </div>
+// <div class="space-y-2">
+// <!-- Connect Wallet (Privy login) -->
+// <div x-show="!walletAddress">
+//   <button
+//     id="privy-login"
+//     class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"
+//     @click="showDrawer = false"
+//     aria-label="Connect Wallet">
+//     Connect Wallet
+//   </button>
+// </div>
+// 
+// <!-- Disconnect Wallet (only if connected) -->
+// <div x-show="walletAddress">
+//   <button
+//     class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"
+//     @click="showDrawer = false; signOut()"
+//     aria-label="Disconnect Wallet">
+//     Disconnect Wallet
+//   </button>
+// </div>
+// 
+// <!-- Sidebar Menu -->
+// <div class="space-y-2 mt-6">
+// 
+//   <!-- Deposit Button -->
+//   <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('depositModal')" aria-label="Deposit">
+//     Deposit
+//   </button>
+// 
+//   <!-- Withdraw Button -->
+//   <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('withdrawModal')" aria-label="Withdraw">
+//     Withdraw
+//   </button>
+// 
+//   <!-- Game Link -->
+//   <a href="/game" class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]">
+//     Game
+//   </a>
+// 
+//   <!-- FAQ Link -->
+//   <a href="/faq" class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]">
+//     FAQ
+//   </a>
+// 
+// </div>
+// 
+//   <!-- Header -->
+// <header class="fixed top-0 left-0 w-full bg-[#1A1A1A] z-20 header">
+//   <div class="header-left">
+//     <button class="hamburger" @click="showDrawer = true" aria-label="Open menu">☰</button>
+//   </div>
+//   <h1 class="logo">MemePicks</h1>
+//   <div class="header-right flex items-center space-x-4 pr-4">
+//     <div>
+//       <p
+//         class="text-xs text-[#B0B0B0]"
+//         x-show="walletAddress"
+// x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4) : ''"
+//       </p>
+//     </div>
+//     <button
+//       class="button-auth text-sm py-2 px-3"
+//       @click="walletAddress ? disconnectWallet() : openModal('walletModal')"
+//       aria-label="Connect or Disconnect Wallet">
+//       <span x-text="walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'"></span>
+//     </button>
+//   </div>
+// </header>
+// 
+//   <!-- Sticky Tabs -->
+//   <div class="sticky-tabs" role六"tablist">
+//     <div class="tabs" x-ref="tabs">
+//       <button :class="{ 'tab-button active': tab === 'trending', 'tab-button': tab !== 'trending' }" @click="tab = 'trending'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'trending'" :tabindex="tab === 'trending' ? 0 : -1">Trending</button>
+//       <button :class="{ 'tab-button active': tab === 'marketcap', 'tab-button': tab !== 'marketcap' }" @click="tab = 'marketcap'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'marketcap'" :tabindex="tab === 'marketcap' ? 0 : -1">MCap</button>
+//       <button :class="{ 'tab-button active': tab === 'volume', 'tab-button': tab !== 'volume' }" @click="tab = 'volume'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'volume'" :tabindex="tab === 'volume' ? 0 : -1">Volume</button>
+//       <button :class="{ 'tab-button active': tab === 'headtohead', 'tab-button': tab !== 'headtohead' }" @click="tab = 'headtohead'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'headtohead'" :tabindex="tab === 'headtohead' ? 0 : -1">H2H</button>
+//       <button :class="{ 'tab-button active': tab === 'memefactor', 'tab-button': tab !== 'memefactor' }" @click="tab = 'memefactor'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'memefactor'" :tabindex="tab === 'memefactor' ? 0 : -1">Meme Factor</button>
+//       <button :class="{ 'tab-button active': tab === 'expiring', 'tab-button': tab !== 'expiring' }" @click="tab = 'expiring'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'expiring'" :tabindex="tab === 'expiring' ? 0 : -1">Expiring</button>
+//     </div>
+//   </div>
+// 
+//   <!-- Slip Preview Banner -->
+//   <div x-show="slip.picks.length" class="fixed w-full bg-[#1E1E1E] text-sm p-2 text-center z-20 slip-preview" :class="{ 'visible': slip.picks.length }" style="bottom: calc(56px + env(safe-area-inset-bottom) + 8px + 56px);">
+//     <span x-text="`${slip.picks.length} Picks – Potential: ${(slip.wager * multipliers[slip.picks.length] || 0).toFixed(2)} SOL`"></span>
+//   </div>
+// 
+//   <!-- Main Content -->
+//   <main class="main-content" :class="{ 'slip-tray-open': showSlipTray }" x-transition:enter="fade-in" x-transition:leave="fade-in">
+//     <!-- Trending Tab -->
+//     <div x-show="tab === 'trending'" class="fade-in" role="tabpanel" id="trending-panel">
+//       <div id="trending-props" class="max-w-xl mx-auto">
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/nutz.png" alt="$NUTZ logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$NUTZ <span class="badge badge-hot">Hot</span></h3>
+//               <p class="text-sm">Will $NUTZ hit $100K MC in 6 hours?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="nutz-001" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $NUTZ">Yes</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="nutz-001" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $NUTZ">No</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>72% picked Yes</p>
+//               <p>MC: $73K · Volume: $12K</p>
+//             </div>
+//           </div>
+//         </div>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/moonshot.png" alt="$MOONSHOT logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$MOONSHOT <span class="badge badge-new">New</span></h3>
+//               <p class="text-sm">Will $MOONSHOT reach 500 buys by 10PM EST?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="moon-003" data-option="Over" @click="addToSlip($event)" aria-label="Pick Over for $MOONSHOT">Over</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="moon-003" data-option="Under" @click="addToSlip($event)" aria-label="Pick Under for $MOONSHOT">Under</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>58% picked Over</p>
+//               <p>MC: $120K · Volume: $20K</p>
+//             </div>
+//           </div>
+//         </div>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/wen.png" alt="$WEN logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$WEN</h3>
+//               <p class="text-sm">Will $WEN gain 1000 holders by midnight?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-004" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $WEN">Yes</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-004" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $WEN">No</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>65% picked Yes</p>
+//               <p>MC: $200K · Volume: $80K</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+// 
+//     <!-- Market Cap Tab -->
+//     <div x-show="tab === 'marketcap'" class="fade-in" role="tabpanel" id="marketcap-panel">
+//       <div id="marketcap-props" class="max-w-xl mx-auto">
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/pepe.png" alt="$PEPE logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$PEPE</h3>
+//               <p class="text-sm">Will $PEPE hit $1M MC today?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="pepe-001" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $PEPE">Yes</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="pepe-001" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $PEPE">No</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>65% picked Yes</p>
+//               <p>MC: $900K · Volume: $40K</p>
+//             </div>
+//           </div>
+//         </div>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/wagmi.png" alt="$WAGMI logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$WAGMI</h3>
+//               <p class="text-sm">Will $WAGMI hit $2M MC by tomorrow?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wagmi-002" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $WAGMI">Yes</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wagmi-002" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $WAGMI">No</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>60% picked Yes</p>
+//               <p>MC: $1.5M · Volume: $60K</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+// 
+//     <!-- Volume Tab -->
+//     <div x-show="tab === 'volume'" class="fade-in" role="tabpanel" id="volume-panel">
+//       <div id="volume-props" class="max-w-xl mx-auto">
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/wen.png" alt="$WEN logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$WEN</h3>
+//               <p class="text-sm">Will $WEN trade over 100K in 6h?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-001" data-option="Over" @click="addToSlip($event)" aria-label="Pick Over for $WEN">Over</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-001" data-option="Under" @click="addToSlip($event)" aria-label="Pick Under for $WEN">Under</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>55% picked Over</p>
+//               <p>MC: $200K · Volume: $80K</p>
+//             </div>
+//           </div>
+//         </div>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/milk.png" alt="$MILK logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$MILK</h3>
+//               <p class="text-sm">Will $MILK trade over 50K by midnight?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="milk-002" data-option="Over" @click="addToSlip($event)" aria-label="Pick Over for $MILK">Over</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="milk-002" data-option="Under" @click="addToSlip($event)" aria-label="Pick Under for $MILK">Under</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>48% picked Over</p>
+//               <p>MC: $45K · Volume: $40K</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+// 
+//     <!-- Head-to-Head Tab -->
+//     <div x-show="tab === 'headtohead'" class="fade-in" role="tabpanel" id="headtohead-panel">
+//       <div id="headtohead-props" class="max-w-xl mx-auto">
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/dogwifhat.png" alt="$DOGWIFHAT logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$DOGWIFHAT vs $SAMO</h3>
+//               <p class="text-sm">Which has higher 1h buys?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="dogwifhat-samo-001" data-option="$DOGWIFHAT" @click="addToSlip($event)" aria-label="Pick $DOGWIFHAT">$DOGWIFHAT</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="dogwifhat-samo-001" data-option="$SAMO" @click="addToSlip($event)" aria-label="Pick $SAMO">$SAMO</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>53% picked $DOGWIFHAT</p>
+//               <p>MC: $500K · Volume: $50K</p>
+//             </div>
+//           </div>
+//         </div>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/nutz.png" alt="$NUTZ logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$NUTZ vs $MILK</h3>
+//               <p class="text-sm">Which has higher 24h volume?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="nutz-milk-002" data-option="$NUTZ" @click="addToSlip($event)" aria-label="Pick $NUTZ">$NUTZ</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="nutz-milk-002" data-option="$MILK" @click="addToSlip($event)" aria-label="Pick $MILK">$MILK</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>60% picked $NUTZ</p>
+//               <p>MC: $73K · Volume: $12K</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+// 
+//     <!-- Meme Factor Tab -->
+//     <div x-show="tab === 'memefactor'" class="fade-in" role="tabpanel" id="memefactor-panel">
+//       <div id="memefactor-props" class="max-w-xl mx-auto">
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/sneed.png" alt="$SNEED logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$SNEED</h3>
+//               <p class="text-sm">Will $SNEED trend on Twitter today?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="sneed-001" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $SNEED">Yes</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="sneed-001" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $SNEED">No</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>60% picked Yes</p>
+//               <p>MC: $30K · Volume: $5K</p>
+//             </div>
+//           </div>
+//         </div>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/moonshot.png" alt="$MOONSHOT logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$MOONSHOT</h3>
+//               <p class="text-sm">Will $MOONSHOT get meme’d by a top account?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="moonshot-002" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $MOONSHOT">Yes</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="moonshot-002" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $MOONSHOT">No</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>45% picked Yes</p>
+//               <p>MC: $120K · Volume: $20K</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+// 
+//     <!-- Expiring Tab -->
+//     <div x-show="tab === 'expiring'" class="fade-in" role="tabpanel" id="expiring-panel">
+//       <div id="expiring-props" class="max-w-xl mx-auto">
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/wen.png" alt="$WEN logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$WEN <span class="badge badge-expiring">Expiring Soon</span></h3>
+//               <p class="text-sm">Will $WEN pump 20% in 30 min?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-002" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $WEN">Yes</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="wen-002" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $WEN">No</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>50% picked Yes</p>
+//               <p>MC: $200K · Volume: $80K</p>
+//             </div>
+//             <p class="text-xs text-[#FFD700]">Expires in 28m</p>
+//           </div>
+//         </div>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/dogwifhat.png" alt="$DOGWIFHAT logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$DOGWIFHAT <span class="badge badge-expiring">Expiring Soon</span></h3>
+//               <p class="text-sm">Will $DOGWIFHAT surge 15% in 15 min?</p>
+//             </div>
+//           </div>
+//           <div class="flex justify-between items-center gap-2">
+//             <div class="flex space-x-2">
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="dogwifhat-005" data-option="Yes" @click="addToSlip($event)" aria-label="Pick Yes for $DOGWIFHAT">Yes</button>
+//               <button class="button-secondary text-sm px-4 py-3 min-w-[64px]" data-prop="dogwifhat-005" data-option="No" @click="addToSlip($event)" aria-label="Pick No for $DOGWIFHAT">No</button>
+//             </div>
+//           </div>
+//           <div class="stats">
+//             <div class="flex justify-between text-xs text-[#B0B0B0]">
+//               <p>52% picked Yes</p>
+//               <p>MC: $500K · Volume: $50K</p>
+//             </div>
+//             <p class="text-xs text-[#FFD700]">Expires in 14m</p>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+// 
+//     <!-- My Picks Tab -->
+//     <div x-show="tab === 'mypicks'" class="fade-in" role="tabpanel" id="mypicks-panel">
+//       <div id="mypicks-props" class="max-w-xl mx-auto">
+//         <h2 class="text-lg font-semibold mb-2">📜 Pick History</h2>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/nutz.png" alt="$NUTZ logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$NUTZ: Yes</h3>
+//               <p class="text-sm">Hit $100K MC in 6h</p>
+//               <p class="text-[#7B61FF] text-xs mt-1">Won: +2.5 SOL</p>
+//             </div>
+//           </div>
+//         </div>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/moonshot.png" alt="$MOONSHOT logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$MOONSHOT: Over</h3>
+//               <p class="text-sm">Reach 500 buys by 10PM EST</p>
+//               <p class="text-[#FF0000] text-xs mt-1">Lost: -1.0 SOL</p>
+//             </div>
+//           </div>
+//         </div>
+//         <div class="card">
+//           <div class="prop-content">
+//             <img src="tokens/pepe.png" alt="$PEPE logo">
+//             <div class="flex-1">
+//               <h3 class="text-base font-bold">$PEPE: Yes</h3>
+//               <p class="text-sm">Hit $1M MC today</p>
+//               <p class="text-[#7B61FF] text-xs mt-1">Won: +3.2 SOL</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+// 
+//     <!-- Leaderboard Tab -->
+//     <div x-show="tab === 'leaderboard'" class="fade-in" role="tabpanel" id="leaderboard-panel">
+//       <div id="leaderboard-content" class="max-w-xl mx-auto">
+//         <div class="card">
+//           <p class="text-sm font-semibold">Top Winners (Daily)</p>
+//           <div class="flex items-center space-x-2 mt-2 glow">
+//             <img src="tokens/nft1.png" alt="NFT avatar" class="w-6 h-6 rounded-full">
+//             <p class="text-[#B0B0B0] text-xs flex-1">1. 4xd5...0eF2 - 4.7 SOL</p>
+//           </div>
+//           <div class="flex items-center space-x-2 mt-1">
+//             <img src="tokens/nft2.png" alt="NFT avatar" class="w-6 h-6 rounded-full">
+//             <p class="text-[#B0B0B0] text-xs flex-1">2. 7G2A...9D1c - 3.2 SOL</p>
+//           </div>
+//           <div class="flex items-center space-x-2 mt-1">
+//             <img src="tokens/nft3.png" alt="NFT avatar" class="w-6 h-6 rounded-full">
+//             <p class="text-[#B0B0B0] text-xs flex-1">3. 9T5Q...1X7N - 2.5 SOL</p>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+// 
+//     <!-- Help Tab -->
+//     <div x-show="tab === 'help'" class="fade-in" role="tabpanel" id="help-panel">
+//       <div id="help-content" class="max-w-xl mx-auto">
+//         <div class="card p-6">
+//           <h2 class="text-lg font-semibold mb-4">Help & Support</h2>
+//           <div class="space-y-6">
+//             <div>
+//               <h3 class="text-sm font-semibold mb-2">FAQs</h3>
+//               <div class="space-y-4">
+//                 <div>
+//                   <p class="text-xs text-[#B0B0B0] font-semibold">Q: How do I place a bet?</p>
+//                   <p class="text-xs text-[#B0B0B0]">A: Select 2–5 picks from the tabs, set a wager (0.1–10 SOL), and submit your slip.</p>
+//                 </div>
+//                 <div>
+//                   <p class="text-xs text-[#B0B0B0] font-semibold">Q: What wallets are supported?</p>
+//                   <p class="text-xs text-[#B0B0B0]">A: We support Phantom and Solflare wallets.</p>
+//                 </div>
+//                 <div>
+//                   <p class="text-xs text-[#B0B0B0] font-semibold">Q: How are winnings calculated?</p>
+//                   <p class="text-xs text-[#B0B0B0]">A: Winnings are based on your wager and the multiplier for the number of picks (2–5).</p>
+//                 </div>
+//               </div>
+//             </div>
+//             <div>
+//               <h3 class="text-sm font-semibold mb-2">Get in Touch</h3>
+//               <a href="https://discord.com" target="_blank" class="block text-sm text-[#7B61FF] hover:underline mb-2" aria-label="Join Discord">Join our Discord</a>
+//               <a href="mailto:support@memepicks.com" class="block text-sm text-[#7B61FF] hover:underline" aria-label="Contact Support">Contact Support</a>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   </main>
+// 
+//   <!-- Floating Slip Button (FAB) -->
+//   <button id="slip-tray-trigger" class="fab" @click="toggleSlipTray()" aria-label="Open entry slip">
+//     <span>Slip</span>
+//     <span id="pick-count" class="badge" x-text="slip.picks.length"></span>
+//   </button>
+// 
+//   <!-- Entry Slip (Mobile Tray) -->
+//   <div id="slip-tray" class="slip-tray" :class="{ 'open': showSlipTray }">
+//     <div class="flex justify-between items-center mb-3">
+//       <h3 class="text-base font-semibold">Your Slip</h3>
+//       <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="showSlipTray = false" aria-label="Close entry slip">✕</button>
+//     </div>
+//     <div id="slip-picks-mobile" class="space-y-2 mb-4">
+//       <template x-if="slip.picks.length === 0">
+//         <p class="text-[#B0B0B0] text-sm">Add picks to start.</p>
+//       </template>
+//       <template x-for="pick in slip.picks" :key="pick.propId">
+//         <div class="bg-[#2A2A2A] p-2 rounded-lg flex justify-between items-center">
+//           <div>
+//             <p class="text-xs font-semibold" x-text="pick.token"></p>
+//             <p class="text-xs text-[#B0B0B0]" x-text="pick.description"></p>
+//             <p class="text-xs text-[#7B61FF]" x-text="pick.choice"></p>
+//           </div>
+//           <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="removePick(pick.propId)" :aria-label="'Remove ' + pick.token + ' prediction from slip'">✕</button>
+//         </div>
+//       </template>
+//     </div>
+//     <div class="mb-4">
+//       <label for="wager-mobile" class="text-xs text-[#B0B0B0] mb-2 block">Wager (SOL)</label>
+//       <input id="wager-mobile" type="number" step="0.1" min="0.1" max="10" class="input-field text-sm" placeholder="0.1–10 SOL" aria-label="Wager amount in SOL (0.1 to 10)" @input="updateSlip()">
+//     </div>
+//     <div id="payout-mobile" class="flex justify-between text-xs mb-4" :class="{ 'hidden': slip.picks.length < 2 }">
+//       <p class="text-[#B0B0B0]">Potential Payout:</p>
+//       <p class="text-[#7B61FF]" x-text="(slip.wager * multipliers[slip.picks.length] || 0).toFixed(2) + ' SOL'"></p>
+//     </div>
+//     <button class="button-primary w-full text-sm py-2" :disabled="!isValidSlip()" @click="submitSlip()" aria-label="Submit entry slip">Submit Slip</button>
+//     <p class="text-[#B0B0B0] text-xs mt-3">Balance: <span x-text="walletBalance !== null ? walletBalance.toFixed(2) : 'Loading...'"></span> SOL</p>
+//   </div>
+// 
+//   <!-- Fixed Bottom Nav -->
+//   <nav class="bottom-nav">
+//     <button :class="{ 'active': tab === 'trending' }" @click="tab = 'trending'; showSlipTray = false; closeAllModals()" aria-label="Home">
+//       <span class="icon">🏠</span>
+//       <span class="label">Home</span>
+//     </button>
+//     <button :class="{ 'active': tab === 'mypicks' }" @click="tab = 'mypicks'; showSlipTray = false; closeAllModals()" aria-label="My Picks">
+//       <span class="icon">📊</span>
+//       <span class="label">My Picks</span>
+//     </button>
+//     <button :class="{ 'active': tab === 'leaderboard' }" @click="tab = 'leaderboard'; showSlipTray = false; closeAllModals()" aria-label="Leaderboard">
+//       <span class="icon">🏆</span>
+//       <span class="label">Leaders</span>
+//     </button>
+//     <button :class="{ 'active': tab === 'help' }" @click="tab = 'help'; showSlipTray = false; closeAllModals()" aria-label="Help">
+//       <span class="icon">❓</span>
+//       <span class="label">Help</span>
+//     </button>
+//   </nav>
+// 
+//   <!-- Modals -->
+// <div id="walletModal" x-show="modals.walletModal" class="fixed inset-0 flex items-end justify-center z-50">
+//   <div class="modal-container" :class="{ 'open': modals.walletModal }">
+//     <div class="modal bg-white text-black rounded-t-lg p-6 shadow-lg w-full">
+//       <div class="flex justify-between items-center mb-4">
+//         <h3 class="text-base font-semibold">Connect Wallet</h3>
+//         <button class="text-gray-400 hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('walletModal')" aria-label="Close wallet modal">✕</button>
+//       </div>
+//       <div id="privy-login" class="w-full"></div>
+//       <button class="button-secondary w-full text-sm py-2 mt-4" @click="closeModal('walletModal')" aria-label="Close wallet modal">Cancel</button>
+//     </div>
+//   </div>
+// </div>
+// 
+//     <div class="space-y-3">
+//       <button @click="connectWallet('phantom')" class="flex items-center gap-3 w-full px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-100">
+//         <img src="/icons/phantom.png" alt="Phantom Logo" class="w-6 h-6" />
+//         <span>Connect with Phantom</span>
+//       </button>
+// 
+//       <button @click="connectWallet('solflare')" class="flex items-center gap-3 w-full px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-100">
+//         <img src="/icons/solflare.png" alt="Solflare Logo" class="w-6 h-6" />
+//         <span>Connect with Solflare</span>
+//       </button>
+//     </div>
+// 
+//     <button class="w-full mt-6 text-center text-sm text-gray-500 hover:text-gray-700" @click="closeModal('walletModal')" aria-label="Cancel">Cancel</button>
+//   </div>
+// </div>
+// 
+//   <div id="helpModal" x-show="modals.helpModal" x-ref="helpModal" class="fixed inset-0 flex items-end justify-center z-50">
+//     <div class="modal-container" :class="{ 'open': modals.helpModal }">
+//       <div class="modal" :class="{ 'open': modals.helpModal }">
+//         <div class="flex justify-between items-center mb-4">
+//           <h3 class="text-base font-semibold">Help & Support</h3>
+//           <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('helpModal')" aria-label="Close help modal">✕</button>
+//         </div>
+//         <div class="space-y-3">
+//           <a href="#" class="block text-sm text-[#B0B0B0] hover:text-[#7B61FF]" aria-label="Help Center">Help Center</a>
+//           <a href="#" class="block text-sm text-[#B0B0B0] hover:text-[#7B61FF]" aria-label="Responsible Betting">Responsible Betting</a>
+//           <a href="https://discord.com" target="_blank" class="block text-sm text-[#B0B0B0] hover:text-[#7B61FF]" aria-label="Join Discord">Join our Discord</a>
+//           <a href="mailto:support@memepicks.com" class="block text-sm text-[#B0B0B0] hover:text-[#7B61FF]" aria-label="Contact Support">Contact Support</a>
+//         </div>
+//         <button class="button-primary w-full text-sm py-2 mt-4" @click="closeModal('helpModal')" aria-label="Close help modal">Close</button>
+//       </div>
+//     </div>
+//   </div>
+// 
+//   <div id="modal" x-show="modals.modal" x-ref="modal" class="fixed inset-0 flex items-end justify-center z-50">
+//     <div class="modal-container" :class="{ 'open': modals.modal }">
+//       <div class="modal" :class="{ 'open': modals.modal }">
+//         <h3 id="modal-title" class="text-base font-semibold mb-3"></h3>
+//         <p id="modal-message" class="text-[#B0B0B0] text-sm mb-4"></p>
+//         <button class="button-primary w-full text-sm py-2" @click="closeModal('modal')" aria-label="Close modal">Close</button>
+//       </div>
+//     </div>
+//   </div>
+// 
+//   <!-- Toast Notification Script -->
+//   <script>
+//     function showToast(message) {
+//       const toast = document.createElement('div');
+//       toast.className = 'toast';
+//       toast.textContent = message;
+//       document.body.appendChild(toast);
+//       setTimeout(() => toast.remove(), 3000);
+//     }
+// 
+// 
+// 
+//   });
+// 
+// 
+//   <!-- Privy Initialization Script -->
+// <script>
+//   document.addEventListener('DOMContentLoaded', async () => {
+//     if (window.Privy) {
+//       });
+// 
+//       // Example: Log in when button is clicked
+//       const loginBtn = document.getElementById("privy-login");
+//       if (loginBtn) {
+//         loginBtn.addEventListener("click", async () => {
+//           try {
+//             const user = await client.auth.login();
+//             console.log("Logged in as:", user);
+//             localStorage.setItem("walletAddress", user.wallet.address);
+//             location.reload();
           } catch (err) {
             console.error("Privy login failed:", err);
           }
@@ -1449,19 +1449,19 @@ x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
     try {
-      const PrivyClient = window.Privy?.default?.PrivyClient;
-      if (!PrivyClient) {
-        console.error("PrivyClient not found");
-        return;
-      }
-      const client = new PrivyClient({
-        appId: "cma934bmv01t2lb0mcn0mmz7a"
-      });
-      console.log("Privy initialized:", client);
-    } catch (err) {
-      console.error("Privy init error:", err);
-    }
-  });
-</script>
-</body>
-</html>
+//       const PrivyClient = window.Privy?.default?.PrivyClient;
+//       if (!PrivyClient) {
+//         console.error("PrivyClient not found");
+//         return;
+//       }
+//       const client = new PrivyClient({
+//         appId: "cma934bmv01t2lb0mcn0mmz7a"
+//       });
+//       console.log("Privy initialized:", client);
+//     } catch (err) {
+//       console.error("Privy init error:", err);
+//     }
+//   });
+// </script>
+// </body>
+// </html>
