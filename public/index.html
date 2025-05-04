@@ -755,7 +755,11 @@
     <h1 class="logo">MemePicks</h1>
     <div class="header-right flex items-center space-x-4 pr-4">
       <div>
-        <p class="text-xs text-[#B0B0B0]" x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4) : 'Not Connected'"></p>
+<p
+  class="text-xs text-[#B0B0B0]"
+  x-show="walletAddress"
+  x-text="walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4)">
+</p>
       </div>
       <button class="button-auth text-sm py-2 px-3"
         @click="walletAddress ? disconnectWallet() : openModal('walletModal')"
