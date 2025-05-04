@@ -625,7 +625,6 @@ document.addEventListener("DOMContentLoaded", () => {
         font-size: 12px;
       }
     }
-  </style>
 </head>
 <body x-data="{
   tab: 'trending',
@@ -781,75 +780,74 @@ document.addEventListener("DOMContentLoaded", () => {
 // <div class="space-y-2">
 // <!-- Connect Wallet (Privy login) -->
 // <div x-show="!walletAddress">
-//   <button
+//   &lt;button
 //     id="privy-login"
 //     class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"
 //     @click="showDrawer = false"
-//     aria-label="Connect Wallet">
+//     aria-label="Connect Wallet"&gt;
 //     Connect Wallet
-//   </button>
-// </div>
+//   &lt;/button&gt;
+// &lt;/div&gt;
 // 
-// <!-- Disconnect Wallet (only if connected) -->
-// <div x-show="walletAddress">
-//   <button
+// &lt;!-- Disconnect Wallet (only if connected) --&gt;
+// &lt;div x-show="walletAddress"&gt;
+//   &lt;button
 //     class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"
 //     @click="showDrawer = false; signOut()"
-//     aria-label="Disconnect Wallet">
+//     aria-label="Disconnect Wallet"&gt;
 //     Disconnect Wallet
-//   </button>
-// </div>
+//   &lt;/button&gt;
+// &lt;/div&gt;
 // 
-// <!-- Sidebar Menu -->
-// <div class="space-y-2 mt-6">
+// &lt;!-- Sidebar Menu --&gt;
+// &lt;div class="space-y-2 mt-6"&gt;
 // 
-//   <!-- Deposit Button -->
-//   <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('depositModal')" aria-label="Deposit">
+//   &lt;!-- Deposit Button --&gt;
+//   &lt;button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('depositModal')" aria-label="Deposit"&gt;
 //     Deposit
-//   </button>
+//   &lt;/button&gt;
 // 
-//   <!-- Withdraw Button -->
-//   <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('withdrawModal')" aria-label="Withdraw">
+//   &lt;!-- Withdraw Button --&gt;
+//   &lt;button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('withdrawModal')" aria-label="Withdraw"&gt;
 //     Withdraw
-//   </button>
+//   &lt;/button&gt;
 // 
-//   <!-- Game Link -->
-//   <a href="/game" class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]">
+//   &lt;!-- Game Link --&gt;
+//   &lt;a href="/game" class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"&gt;
 //     Game
-//   </a>
+//   &lt;/a&gt;
 // 
-//   <!-- FAQ Link -->
-//   <a href="/faq" class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]">
+//   &lt;!-- FAQ Link --&gt;
+//   &lt;a href="/faq" class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"&gt;
 //     FAQ
-//   </a>
+//   &lt;/a&gt;
 // 
-// </div>
+// &lt;/div&gt;
 // 
-//   <!-- Header -->
-// <header class="fixed top-0 left-0 w-full bg-[#1A1A1A] z-20 header">
-//   <div class="header-left">
-//     <button class="hamburger" @click="showDrawer = true" aria-label="Open menu">☰</button>
-//   </div>
-//   <h1 class="logo">MemePicks</h1>
-//   <div class="header-right flex items-center space-x-4 pr-4">
-//     <div>
-//       <p
+//   &lt;!-- Header --&gt;
+// &lt;header class="fixed top-0 left-0 w-full bg-[#1A1A1A] z-20 header"&gt;
+//   &lt;div class="header-left"&gt;
+//     &lt;button class="hamburger" @click="showDrawer = true" aria-label="Open menu"&gt;☰&lt;/button&gt;
+//   &lt;/div&gt;
+//   &lt;h1 class="logo"&gt;MemePicks&lt;/h1&gt;
+//   &lt;div class="header-right flex items-center space-x-4 pr-4"&gt;
+//     &lt;div&gt;
+//       &lt;p
 //         class="text-xs text-[#B0B0B0]"
 //         x-show="walletAddress"
 // x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4) : ''"
-//       </p>
-//     </div>
-//     <button
+//       &lt;/p&gt;
+//     &lt;/div&gt;
+//     &lt;button
 //       class="button-auth text-sm py-2 px-3"
 //       @click="walletAddress ? disconnectWallet() : openModal('walletModal')"
-//       aria-label="Connect or Disconnect Wallet">
-//       <span x-text="walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'"></span>
-//     </button>
+//       aria-label="Connect or Disconnect Wallet"&gt;
+//       &lt;span x-text="walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'"&gt;&lt;/span&gt;
+//     &lt;/button&gt;
 //   </div>
-// </header>
 // 
 //   <!-- Sticky Tabs -->
-//   <div class="sticky-tabs" role六"tablist">
+//   &lt;div class="sticky-tabs" role六"tablist"&gt;
 //     <div class="tabs" x-ref="tabs">
 //       <button :class="{ 'tab-button active': tab === 'trending', 'tab-button': tab !== 'trending' }" @click="tab = 'trending'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'trending'" :tabindex="tab === 'trending' ? 0 : -1">Trending</button>
 //       <button :class="{ 'tab-button active': tab === 'marketcap', 'tab-button': tab !== 'marketcap' }" @click="tab = 'marketcap'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'marketcap'" :tabindex="tab === 'marketcap' ? 0 : -1">MCap</button>
@@ -1240,7 +1238,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //     <div x-show="tab === 'help'" class="fade-in" role="tabpanel" id="help-panel">
 //       <div id="help-content" class="max-w-xl mx-auto">
 //         <div class="card p-6">
-//           <h2 class="text-lg font-semibold mb-4">Help & Support</h2>
+//           <h2 class="text-lg font-semibold mb-4">Help &amp; Support</h2>
 //           <div class="space-y-6">
 //             <div>
 //               <h3 class="text-sm font-semibold mb-2">FAQs</h3>
@@ -1337,7 +1335,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //         <h3 class="text-base font-semibold">Connect Wallet</h3>
 //         <button class="text-gray-400 hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('walletModal')" aria-label="Close wallet modal">✕</button>
 //       </div>
-//       <div id="privy-login" class="w-full"></div>
+//       <div id="privy-login-unique" class="w-full"></div>
 //       <button class="button-secondary w-full text-sm py-2 mt-4" @click="closeModal('walletModal')" aria-label="Close wallet modal">Cancel</button>
 //     </div>
 //   </div>
@@ -1363,7 +1361,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //     <div class="modal-container" :class="{ 'open': modals.helpModal }">
 //       <div class="modal" :class="{ 'open': modals.helpModal }">
 //         <div class="flex justify-between items-center mb-4">
-//           <h3 class="text-base font-semibold">Help & Support</h3>
+//           <h3 class="text-base font-semibold">Help &amp; Support</h3>
 //           <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('helpModal')" aria-label="Close help modal">✕</button>
 //         </div>
 //         <div class="space-y-3">
@@ -1393,6 +1391,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+</script>
+</body>
+</html>
     if (window.Privy) {
       // Temporarily disable login
       // const client = new PrivyClient({ /* your config here */ });
@@ -1410,6 +1411,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Privy not available.");
     }
   });
-</script>
-// // </body>
+    }
+  });
 // Removed dangling bracket at EOF to fix Unexpected end of input error
