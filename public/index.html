@@ -1397,71 +1397,25 @@
 // 
 //   });
 // 
-// 
-//   <!-- Privy Initialization Script -->
-// <script>
-//   document.addEventListener('DOMContentLoaded', async () => {
-//     if (window.Privy) {
-//       });
-// 
-//       // Example: Log in when button is clicked
-//       const loginBtn = document.getElementById("privy-login");
-//       if (loginBtn) {
-//         loginBtn.addEventListener("click", async () => {
-//           try {
-//             const user = await client.auth.login();
-//             console.log("Logged in as:", user);
-//             localStorage.setItem("walletAddress", user.wallet.address);
-//             location.reload();
-          } catch (err) {
-            console.error("Privy login failed:", err);
-          }
-        });
-      }
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.Privy) {
+      // Temporarily disable login
+      // const client = new PrivyClient({ /* your config here */ });
+      // client.login({
+      //   onSuccess: (user) => {
+      //     console.log("Connected:", user);
+      //     localStorage.setItem("walletAddress", user.wallet.address);
+      //     location.reload();
+      //   },
+      //   onError: (err) => {
+      //     console.error("Privy error:", err);
+      //   }
+      // });
     } else {
-      console.error("Privy SDK not loaded.");
+      console.warn("Privy not available.");
     }
   });
-
-
-
-  });
-
-<script>
-<script>
-  });
-<script>
-  });
-<script src="/js/privy-sdk.js"></script>
-
-<script>
-
-  window.addEventListener("DOMContentLoaded", () => {
-
-
-
-
-    console.log("Privy initialized", client);
-
-  });
-
 </script>
-<script>
-  document.addEventListener("DOMContentLoaded", async () => {
-    try {
-//       const PrivyClient = window.Privy?.default?.PrivyClient;
-//       if (!PrivyClient) {
-//         console.error("PrivyClient not found");
-//         return;
-//       }
-// //       const client = new PrivyClient({
-// //         appId: "cma934bmv01t2lb0mcn0mmz7a"
-// //       });
-// //       console.log("Privy initialized:", client);
-// //     } catch (err) {
-// //       console.error("Privy init error:", err);
-// //     }
-// //   });
-// // </script>
 // // </body>
 // Removed dangling bracket at EOF to fix Unexpected end of input error
