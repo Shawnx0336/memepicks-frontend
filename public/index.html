@@ -10,42 +10,62 @@
 
 
 
-  });
 
 
 
 
-  });
 
   <!-- Privy SDK loaded early in head -->
 
 
-
-  });
-
 <script>
-  document.addEventListener('DOMContentLoaded', async () => {
-//     if (window.Privy) {
-// // //         onSuccess: (user) => {
-// // //           console.log("Connected:", user);
-// // //           localStorage.setItem("walletAddress", user.wallet.address);
-// // //           location.reload();
-//         },
-        onError: (err) => {
-          console.error("Privy error:", err);
-        }
-      });
 
-      // Bind to button if present
-      const loginBtn = document.getElementById("privy-login");
-      if (loginBtn) loginBtn.addEventListener("click", () => privy.login());
-    } else {
-      console.error("Privy SDK not loaded.");
+document.addEventListener("DOMContentLoaded", () => {
+
+ if (window.Privy) {
+
+   // Privy SDK temporarily disabled
+    console.log("✅ JS loaded and running");
+
+   // const client = new PrivyClient({ /* config */ });
+
+   // client.login({
+
+   //   onSuccess: (user) => {
+
+   //     console.log("Connected:", user);
+
+   //     localStorage.setItem("walletAddress", user.wallet.address);
+
+   //     location.reload();
+
+   //   },
+
+   //   onError: (err) => {
+
+   //     console.error("Privy error:", err);
+
+   //   }
+
+   // });
+
+ } else {
+
+   console.error("Privy SDK not loaded.");
+
+ }
+
+});
+
+</script>
+      //   }
+
+      // });
     }
+
   });
 
-
-
+</script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
