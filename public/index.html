@@ -26,11 +26,11 @@
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     if (window.Privy) {
-        onSuccess: (user) => {
-          console.log("Connected:", user);
-          localStorage.setItem("walletAddress", user.wallet.address);
-          location.reload();
-        },
+//         onSuccess: (user) => {
+//           console.log("Connected:", user);
+//           localStorage.setItem("walletAddress", user.wallet.address);
+//           location.reload();
+//         },
         onError: (err) => {
           console.error("Privy error:", err);
         }
