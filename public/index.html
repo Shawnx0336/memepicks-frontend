@@ -585,17 +585,16 @@
   multipliers: { 2: 2, 3: 5, 4: 10, 5: 20 },
   walletConnection: null,
 
-
-init() {
-  console.log("Privy init loaded");
-  document.addEventListener("DOMContentLoaded", () => {
-    const privy = new Privy({
-      appId: "cma934bmv01t2lb0mcn0mmz7a",
-      showModal: true,
+  init() {
+    console.log('Privy init loaded');
+    document.addEventListener('DOMContentLoaded', () => {
+      const privy = new Privy({
+        appId: 'cma934bmv01t2lb0mcn0mmz7a',
+        showModal: true,
+      });
+      window.privy = privy;
     });
-    window.privy = privy;
-  });
-},
+  },
 
   openModal(modalId) {
     this.closeAllModals();
@@ -711,14 +710,14 @@ init() {
     showToast('Signed out successfully.');
   },
 
-connectWallet(walletType) {
-  window.privy = window.privy || {};
-  if (window.privy && window.privy.show) {
-    window.privy.show();
-  } else {
-    showToast('Failed to initialize wallet connection.');
-  }
-},
+  connectWallet(walletType) {
+    window.privy = window.privy || {};
+    if (window.privy && window.privy.show) {
+      window.privy.show();
+    } else {
+      showToast('Failed to initialize wallet connection.');
+    }
+  },
 
   disconnectWallet() {
     this.walletAddress = null;
