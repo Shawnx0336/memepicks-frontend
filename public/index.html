@@ -571,6 +571,7 @@
       }
     }
   </style>
+<script defer src="https://auth.privy.io/embed.js"></script>
 </head>
 <body x-data="{
   tab: 'trending',
@@ -584,12 +585,21 @@
   multipliers: { 2: 2, 3: 5, 4: 10, 5: 20 },
   walletConnection: null,
 
-  init() {},
-
-  toggleBodyScroll(enable) {
-    document.body.classList.toggle('modal-open', !enable);
-    document.body.style.overflow = enable ? 'auto' : 'hidden';
-  },
+init() {
+  const privyAppId = 'cma934bmv01t2lb0mcn0mmz7a'; // Your real app ID
+  window.privy = window.Privy.init({
+    appId: privyAppId,
+    showButton: false,
+    onSuccess: (user) => {
+      this.walletAddress = user.wallet?.address || 'Connected';
+      showToast('Wallet connected successfully!');
+    },
+    onError: (error) => {
+      console.error('Privy Error:', error);
+      showToast('Connection failed.');
+    }
+  });
+},
 
   openModal(modalId) {
     this.closeAllModals();
@@ -705,12 +715,14 @@
     showToast('Signed out successfully.');
   },
 
-  connectWallet(walletType) {
-    this.walletAddress = '4xd5...0eF2'; // placeholder, replace with real logic
-    this.walletBalance = 10.5;
-    this.closeModal('walletModal');
-    showToast(`${walletType} wallet connected.`);
-  },
+connectWallet(walletType) {
+  window.privy = window.privy || {};
+  if (window.privy && window.privy.show) {
+    window.privy.show();
+  } else {
+    showToast('Failed to initialize wallet connection.');
+  }
+},
 
   disconnectWallet() {
     this.walletAddress = null;
@@ -757,6 +769,13 @@
       <span x-text="walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'"></span>
     </button>
   </div>
+<!-- Privy Wallet Connect Widget -->
+<div id="wallet-connect-wrapper" class="fixed bottom-4 left-0 w-full px-4 z-50">
+  <div class="bg-[#1F1F1F] border border-[#333] rounded-xl shadow-lg p-4 max-w-sm mx-auto">
+    <h2 class="text-sm font-semibold mb-2 text-white">Connect your wallet</h2>
+    <div id="privy-connect-button"></div>
+  </div>
+</div>
 </header>
 
   <!-- Sticky Tabs -->
@@ -1241,18 +1260,6 @@
   </nav>
 
   <!-- Modals -->
-<div id="walletModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
-  <div class="w-full max-w-sm bg-[#1E1E1E] rounded-lg shadow-lg p-6 mx-4">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-base font-semibold text-white">Connect Wallet</h3>
-      <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('walletModal')" aria-label="Cancel wallet connection">✕</button>
-    </div>
-    <div class="space-y-3">
-      <button class="button-secondary w-full text-sm py-3" @click="connectWallet('phantom')">Phantom</button>
-      <button class="button-secondary w-full text-sm py-3" @click="connectWallet('solflare')">Solflare</button>
-    </div>
-  </div>
-</div>
 
   <div id="helpModal" class="fixed inset-0 flex items-end justify-center z-50 hidden">
     <div class="modal-container" :class="{ 'open': activeModal === 'helpModal' }">
