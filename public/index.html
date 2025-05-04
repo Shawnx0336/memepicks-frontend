@@ -586,20 +586,15 @@
   walletConnection: null,
 
 init() {
-  const privyAppId = 'cma934bmv01t2lb0mcn0mmz7a'; // Your real app ID
-  window.privy = window.Privy.init({
-    appId: privyAppId,
-    showButton: false,
-    onSuccess: (user) => {
-      this.walletAddress = user.wallet?.address || 'Connected';
-      showToast('Wallet connected successfully!');
-    },
-    onError: (error) => {
-      console.error('Privy Error:', error);
-      showToast('Connection failed.');
-    }
+  console.log("Privy init loaded");
+  document.addEventListener("DOMContentLoaded", () => {
+    const privy = new Privy({
+      appId: "cma934bmv01t2lb0mcn0mmz7a",
+      showModal: true,
+    });
+    window.privy = privy;
   });
-},
+}
 
   openModal(modalId) {
     this.closeAllModals();
