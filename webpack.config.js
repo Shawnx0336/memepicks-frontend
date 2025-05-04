@@ -1,12 +1,30 @@
 const path = require('path');
 
 module.exports = {
-  entry: './node_modules/@privy-io/js-sdk-core/dist/cjs/client/Privy.js',
+  entry: './webpack-entry.js',
   output: {
     filename: 'privy-sdk.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'public/js'),
     library: 'Privy',
-    libraryTarget: 'umd'
+    libraryTarget: 'window'
   },
-  mode: 'production'
+  mode: 'production',
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+            sourceType: 'unambiguous'
+          }
+        }
+      }
+    ]
+  },
+  experiments: {
+    outputModule: true
+  }
 };
