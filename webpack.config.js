@@ -6,7 +6,7 @@ module.exports = {
     filename: 'privy-sdk.js',
     path: path.resolve(__dirname, 'public/js'),
     library: 'Privy',
-    libraryTarget: 'umd'
+    libraryTarget: 'var'
   },
   mode: 'production'
 };
