@@ -1241,17 +1241,15 @@
   </nav>
 
   <!-- Modals -->
-<div id="walletModal" class="fixed inset-0 flex items-end justify-center z-50 hidden">
-  <div class="modal-container" :class="{ 'open': activeModal === 'walletModal' }">
-    <div class="modal" :class="{ 'open': activeModal === 'walletModal' }">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-base font-semibold">Connect Wallet</h3>
-        <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('walletModal')" aria-label="Cancel wallet connection">✕</button>
-      </div>
-      <div class="space-y-3">
-        <button class="button-secondary w-full text-sm py-2" @click="connectWallet('phantom')" aria-label="Connect with Phantom wallet">Phantom</button>
-        <button class="button-secondary w-full text-sm py-2" @click="connectWallet('solflare')" aria-label="Connect with Solflare wallet">Solflare</button>
-      </div>
+<div id="walletModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+  <div class="w-full max-w-sm bg-[#1E1E1E] rounded-lg shadow-lg p-6 mx-4">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-base font-semibold text-white">Connect Wallet</h3>
+      <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('walletModal')" aria-label="Cancel wallet connection">✕</button>
+    </div>
+    <div class="space-y-3">
+      <button class="button-secondary w-full text-sm py-3" @click="connectWallet('phantom')">Phantom</button>
+      <button class="button-secondary w-full text-sm py-3" @click="connectWallet('solflare')">Solflare</button>
     </div>
   </div>
 </div>
