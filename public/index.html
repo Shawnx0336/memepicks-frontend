@@ -14,7 +14,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     if (window.Privy) {
-      const privy = new window.Privy({
+      const privy = new window.Privy.PrivyClient({
         appId: "cma934bmv01t2lb0mcn0mmz7a",
         onSuccess: (user) => {
           console.log("Connected:", user);
