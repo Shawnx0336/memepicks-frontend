@@ -585,6 +585,7 @@
   multipliers: { 2: 2, 3: 5, 4: 10, 5: 20 },
   walletConnection: null,
 
+
 init() {
   console.log("Privy init loaded");
   document.addEventListener("DOMContentLoaded", () => {
@@ -594,7 +595,7 @@ init() {
     });
     window.privy = privy;
   });
-}
+},
 
   openModal(modalId) {
     this.closeAllModals();
