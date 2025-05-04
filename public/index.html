@@ -1438,16 +1438,30 @@ x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(
 
   window.addEventListener("DOMContentLoaded", () => {
 
-    const PrivyClient = window.Privy?.default?.PrivyClient;
 
-    if (!PrivyClient) return console.error("PrivyClient not found");
 
-    const client = new PrivyClient({ appId: "cma934bmv01t2lb0mcn0mmz7a" });
 
     console.log("Privy initialized", client);
 
   });
 
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const PrivyClient = window.Privy?.default?.PrivyClient;
+      if (!PrivyClient) {
+        console.error("PrivyClient not found");
+        return;
+      }
+      const client = new PrivyClient({
+        appId: "cma934bmv01t2lb0mcn0mmz7a"
+      });
+      console.log("Privy initialized:", client);
+    } catch (err) {
+      console.error("Privy init error:", err);
+    }
+  });
 </script>
 </body>
 </html>
