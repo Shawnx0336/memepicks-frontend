@@ -7,7 +7,6 @@
 <title>MemePicks – Meme Coin Prop Betting</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  const PrivyClient = window.Privy?.default?.PrivyClient;
 
   const client = new PrivyClient({
 
@@ -16,7 +15,6 @@
   });
 
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
-  const PrivyClient = window.Privy?.default?.PrivyClient;
 
   const client = new PrivyClient({
 
@@ -26,7 +24,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.93.0/lib/index.iife.min.js"></script>
   <!-- Privy SDK loaded early in head -->
-  const PrivyClient = window.Privy?.default?.PrivyClient;
 
   const client = new PrivyClient({
 
@@ -57,7 +54,6 @@
       console.error("Privy SDK not loaded.");
     }
   });
-  const PrivyClient = window.Privy?.default?.PrivyClient;
 
   const client = new PrivyClient({
 
@@ -1410,7 +1406,6 @@ x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 3000);
     }
-  const PrivyClient = window.Privy?.default?.PrivyClient;
 
   const client = new PrivyClient({
 
@@ -1446,7 +1441,6 @@ x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(
       console.error("Privy SDK not loaded.");
     }
   });
-  const PrivyClient = window.Privy?.default?.PrivyClient;
 
   const client = new PrivyClient({
 
@@ -1454,6 +1448,10 @@ x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(
 
   });
 
+</script>
+<script>
+const PrivyClient = window.Privy?.default?.PrivyClient;
+const client = new PrivyClient({ appId: "cma934bmv01t2lb0mcn0mmz7a" });
 </script>
 </body>
 </html>
