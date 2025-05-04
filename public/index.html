@@ -10,7 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.93.0/lib/index.iife.min.js"></script>
   <!-- Privy SDK loaded early in head -->
-<script async src="https://cdn.privy.io/sdk/privy.js"></script>
+<script src="/privy-sdk.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     if (window.Privy) {
@@ -750,7 +750,10 @@
 }" @click.debounce.500ms.self="activeModal && closeAllModals()">
 
   <!-- Drawer Menu -->
-  <div class="overlay" :class="{ 'open': showDrawer }" @click="showDrawer = false"></div>
+<button id="privy-login" class="button-auth text-sm py-2 px-3">
+  Connect Wallet
+</button>  
+<div class="overlay" :class="{ 'open': showDrawer }" @click="showDrawer = false"></div>
   <div class="drawer" :class="{ 'open': showDrawer }">
     <div class="p-4">
       <div class="flex justify-between items-center mb-4">
@@ -758,15 +761,16 @@
         <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="showDrawer = false" aria-label="Close drawer">✕</button>
       </div>
 <div class="space-y-2">
-  <!-- Connect Wallet (only if NOT connected) -->
-  <div x-show="!walletAddress">
-    <button
-      class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"
-      @click="showDrawer = false; openModal('walletModal')"
-      aria-label="Connect Wallet">
-      Connect Wallet
-    </button>
-  </div>
+<!-- Connect Wallet (Privy login) -->
+<div x-show="!walletAddress">
+  <button
+    id="privy-login"
+    class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]"
+    @click="showDrawer = false"
+    aria-label="Connect Wallet">
+    Connect Wallet
+  </button>
+</div>
 
 <!-- Disconnect Wallet (only if connected) -->
 <div x-show="walletAddress">
@@ -1377,19 +1381,31 @@ x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(
   </script>
 
   <!-- Privy Initialization Script -->
-  <script>
-    window.addEventListener('load', () => {
-      if (window.Privy) {
-        console.log('Privy init loaded');
-        window.Privy.init({
-          appId: 'cma934bmv01t2lb0mcn0mmz7a',
-          showModal: true,
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (window.Privy) {
+      const client = new window.Privy.PrivyClient({
+        appId: "cma934bmv01t2lb0mcn0mmz7a",
+      });
+
+      // Example: Log in when button is clicked
+      const loginBtn = document.getElementById("privy-login");
+      if (loginBtn) {
+        loginBtn.addEventListener("click", async () => {
+          try {
+            const user = await client.auth.login();
+            console.log("Logged in as:", user);
+            localStorage.setItem("walletAddress", user.wallet.address);
+            location.reload();
+          } catch (err) {
+            console.error("Privy login failed:", err);
+          }
         });
-      } else {
-        console.error('Privy not loaded');
-        showToast('Failed to initialize wallet connection.');
       }
-    });
-  </script>
+    } else {
+      console.error("Privy SDK not loaded.");
+    }
+  });
+</script>
 </body>
 </html>
