@@ -574,7 +574,6 @@
 </head>
 <body x-data="{
   tab: 'trending',
-  isSignedIn: localStorage.getItem('isSignedIn') === 'true',
   walletAddress: null,
   walletBalance: null,
   showProfileDropdown: false,
@@ -584,18 +583,14 @@
   slip: { picks: [], wager: 0 },
   multipliers: { 2: 2, 3: 5, 4: 10, 5: 20 },
   walletConnection: null,
-  init() {
-    // Ensure isSignedIn is correctly initialized on page load
-    this.isSignedIn = localStorage.getItem('isSignedIn') === 'true';
-    // Watch for changes to isSignedIn to ensure UI consistency
-    this.$watch('isSignedIn', (value) => {
-      localStorage.setItem('isSignedIn', value);
-    });
-  },
+
+  init() {},
+
   toggleBodyScroll(enable) {
     document.body.classList.toggle('modal-open', !enable);
     document.body.style.overflow = enable ? 'auto' : 'hidden';
   },
+
   openModal(modalId) {
     this.closeAllModals();
     this.showSlipTray = false;
@@ -605,6 +600,7 @@
     this.activeModal = modalId;
     this.toggleBodyScroll(false);
   },
+
   closeModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.classList.remove('open');
@@ -614,8 +610,9 @@
     document.body.classList.remove('modal-open');
     document.body.style.overflow = 'auto';
   },
+
   closeAllModals() {
-    ['signInModal', 'signUpModal', 'walletModal', 'helpModal', 'modal'].forEach(id => {
+    ['walletModal', 'helpModal', 'modal'].forEach(id => {
       const modal = document.getElementById(id);
       modal.classList.remove('open');
       modal.classList.add('hidden');
@@ -625,12 +622,15 @@
     document.body.classList.remove('modal-open');
     document.body.style.overflow = 'auto';
   },
+
   scrollTabIntoView(element) {
     element.scrollIntoView({ behavior: 'smooth', inline: 'center' });
   },
+
   showHelpModal() {
     this.openModal('helpModal');
   },
+
   toggleSlipTray() {
     this.showSlipTray = !this.showSlipTray;
     if (this.showSlipTray) {
@@ -642,6 +642,7 @@
       document.body.style.overflow = 'auto';
     }
   },
+
   addToSlip(event) {
     const propId = event.target.dataset.prop;
     const choice = event.target.dataset.option;
@@ -659,22 +660,26 @@
     event.target.classList.add('active');
     showToast(`${token}: ${choice} added to slip.`);
   },
+
   removePick(propId) {
     this.slip.picks = this.slip.picks.filter(pick => pick.propId !== propId);
     const button = document.querySelector(`.button-secondary[data-prop='${propId}'].active`);
     if (button) button.classList.remove('active');
   },
+
   updateSlip() {
     const wagerInput = document.getElementById('wager-mobile');
     this.slip.wager = parseFloat(wagerInput.value) || 0;
   },
+
   isValidSlip() {
     return this.slip.picks.length >= 2 && this.slip.picks.length <= 5 && this.slip.wager >= 0.1 && this.slip.wager <= 10;
   },
+
   submitSlip() {
-    if (!this.isSignedIn) {
-      this.openModal('signInModal');
-      showToast('Please sign in to submit your slip.');
+    if (!this.walletAddress) {
+      this.openModal('walletModal');
+      showToast('Please connect your wallet to submit your slip.');
       return;
     }
     if (!this.isValidSlip()) {
@@ -692,108 +697,67 @@
     this.showSlipTray = false;
     this.toggleBodyScroll(true);
   },
-  signIn() {
-    // Simulate sign-in (replace with actual auth logic)
-    this.isSignedIn = true;
-    localStorage.setItem('isSignedIn', 'true');
-    this.closeModal('signInModal');
-    showToast('Signed in successfully.');
-  },
-  signUp() {
-    // Simulate sign-up (replace with actual auth logic)
-    this.isSignedIn = true;
-    localStorage.setItem('isSignedIn', 'true');
-    this.closeModal('signUpModal');
-    showToast('Signed up successfully.');
-  },
+
   signOut() {
-    this.isSignedIn = false;
-    localStorage.removeItem('isSignedIn');
     this.walletAddress = null;
     this.walletBalance = null;
     this.showProfileDropdown = false;
     showToast('Signed out successfully.');
   },
+
   connectWallet(walletType) {
-    // Simulate wallet connection (replace with actual Solana wallet logic)
-    this.walletAddress = '4xd5...0eF2';
+    this.walletAddress = '4xd5...0eF2'; // placeholder, replace with real logic
     this.walletBalance = 10.5;
     this.closeModal('walletModal');
     showToast(`${walletType} wallet connected.`);
   },
+
   disconnectWallet() {
     this.walletAddress = null;
     this.walletBalance = null;
     showToast('Wallet disconnected.');
   }
 }" @click.debounce.500ms.self="activeModal && closeAllModals()">
+
   <!-- Drawer Menu -->
-  <div class="overlay" :class="{ 'open': showDrawer }" @click="showDrawer = false"></div>
-  <div class="drawer" :class="{ 'open': showDrawer }">
-    <div class="p-4">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold text-[#7B61FF]">MemePicks</h2>
-        <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="showDrawer = false" aria-label="Close drawer">✕</button>
-      </div>
-      <template x-if="!isSignedIn">
-        <div class="space-y-2">
-          <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('signInModal')" aria-label="Sign In">Sign In</button>
-          <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('signUpModal')" aria-label="Sign Up">Sign Up</button>
-        </div>
-      </template>
-      <template x-if="isSignedIn">
-        <div class="space-y-2">
-          <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; signOut()" aria-label="Sign Out">Sign Out</button>
-        </div>
-      </template>
-      <div class="space-y-2 mt-4">
-        <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; showHelpModal()" aria-label="Help Center">Help Center</a>
-        <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Responsible Betting">Responsible Betting</a>
-        <a href="https://discord.com" target="_blank" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Discord">Discord</a>
-        <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Terms & Privacy">Terms & Privacy</a>
-        <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Accessibility Options">Accessibility Options</a>
-      </div>
+<div class="overlay" :class="{ 'open': showDrawer }" @click="showDrawer = false"></div>
+<div class="drawer" :class="{ 'open': showDrawer }">
+  <div class="p-4">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold text-[#7B61FF]">MemePicks</h2>
+      <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="showDrawer = false" aria-label="Close drawer">✕</button>
+    </div>
+    <div class="space-y-2">
+      <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('walletModal')" aria-label="Connect Wallet">Connect Wallet</button>
+      <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; signOut()" aria-label="Disconnect Wallet">Disconnect Wallet</button>
+    </div>
+    <div class="space-y-2 mt-4">
+      <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; showHelpModal()" aria-label="Help Center">Help Center</a>
+      <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Responsible Betting">Responsible Betting</a>
+      <a href="https://discord.com" target="_blank" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Discord">Discord</a>
+      <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Terms & Privacy">Terms & Privacy</a>
+      <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Accessibility Options">Accessibility Options</a>
     </div>
   </div>
+</div>
 
   <!-- Header -->
-  <header class="fixed top-0 left-0 w-full bg-[#1A1A1A] z-20 header">
-    <div class="header-left">
-      <button class="hamburger" @click="showDrawer = true" aria-label="Open menu">☰</button>
+<header class="fixed top-0 left-0 w-full bg-[#1A1A1A] z-20 header">
+  <div class="header-left">
+    <button class="hamburger" @click="showDrawer = true" aria-label="Open menu">☰</button>
+  </div>
+  <h1 class="logo">MemePicks</h1>
+  <div class="header-right flex items-center space-x-4 pr-4">
+    <div>
+      <p class="text-xs text-[#B0B0B0]" x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4) : 'Not Connected'"></p>
     </div>
-    <h1 class="logo">MemePicks</h1>
-    <div class="header-right">
-      <template x-if="!isSignedIn">
-        <div class="flex space-x-2">
-          <button class="button-auth text-sm" @click="openModal('signInModal')" aria-label="Sign In">Sign In</button>
-          <button class="button-auth text-sm" @click="openModal('signUpModal')" aria-label="Sign Up">Sign Up</button>
-        </div>
-      </template>
-      <template x-if="isSignedIn">
-        <div class="profile-avatar-container">
-          <button class="profile-avatar" @click="showProfileDropdown = !showProfileDropdown" aria-label="Profile">
-            <img src="tokens/nft1.png" alt="User NFT avatar" class="w-full h-full object-cover" onerror="this.src='tokens/placeholder.png'">
-          </button>
-          <div x-show="showProfileDropdown" @click.away="showProfileDropdown = false" class="absolute right-4 mt-2 w-48 bg-[#1E1E1E] rounded-lg shadow-lg z-10">
-            <div class="p-4">
-              <div class="flex items-center space-x-2">
-                <img src="tokens/nft1.png" alt="User NFT avatar" class="w-8 h-8 rounded-full" onerror="this.src='tokens/placeholder.png'">
-                <div>
-                  <p class="text-sm font-semibold">Degen#1234</p>
-                  <p class="text-xs text-[#B0B0B0]" x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4) : 'Not Connected'"></p>
-                </div>
-              </div>
-              <p class="text-xs text-[#B0B0B0] mt-2">Wins: 12 | Total Earned: 8.5 SOL</p>
-              <button class="button-auth w-full text-sm py-2 mt-3" @click="walletAddress ? disconnectWallet() : openModal('walletModal')" aria-label="Connect or Disconnect Wallet">
-                <span x-text="walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'"></span>
-              </button>
-              <button class="button-auth w-full text-sm py-2 mt-2" @click="signOut()" aria-label="Sign Out">Sign Out</button>
-            </div>
-          </div>
-        </div>
-      </template>
-    </div>
-  </header>
+    <button class="button-auth text-sm py-2 px-3"
+      @click="walletAddress ? disconnectWallet() : openModal('walletModal')"
+      aria-label="Connect or Disconnect Wallet">
+      <span x-text="walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'"></span>
+    </button>
+  </div>
+</header>
 
   <!-- Sticky Tabs -->
   <div class="sticky-tabs" role="tablist">
@@ -1277,52 +1241,20 @@
   </nav>
 
   <!-- Modals -->
-<div id="signInModal" class="modal-auth fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto hidden">
-  <div class="bg-gray-900 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-semibold">Sign In</h2>
-      <button onclick="closeAuthModal()" aria-label="Close modal">×</button>
-    </div>
-    <label class="block text-sm font-medium mb-1" for="email-signin">Email</label>
-    <input id="email-signin" type="email" class="w-full mb-4 p-2 rounded bg-gray-800 text-white" placeholder="Enter your email">
-
-    <label class="block text-sm font-medium mb-1" for="password-signin">Password</label>
-    <input id="password-signin" type="password" class="w-full mb-6 p-2 rounded bg-gray-800 text-white" placeholder="Enter your password">
-
-    <button id="signInButton" class="w-full py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded">Sign In</button>
-  </div>
-</div>
-
-<div id="signUpModal" class="modal-auth fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto hidden">
-  <div class="bg-gray-900 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-semibold">Sign Up</h2>
-      <button onclick="closeAuthModal()" aria-label="Close modal">×</button>
-    </div>
-    <label class="block text-sm font-medium mb-1" for="email-signup">Email</label>
-    <input id="email-signup" type="email" class="w-full mb-4 p-2 rounded bg-gray-800 text-white" placeholder="Enter your email">
-
-    <label class="block text-sm font-medium mb-1" for="password-signup">Password</label>
-    <input id="password-signup" type="password" class="w-full mb-6 p-2 rounded bg-gray-800 text-white" placeholder="Create a password">
-
-    <button id="signUpButton" class="w-full py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded">Sign Up</button>
-  </div>
-</div>
-
-  <div id="walletModal" class="fixed inset-0 flex items-end justify-center z-50 hidden">
-    <div class="modal-container" :class="{ 'open': activeModal === 'walletModal' }">
-      <div class="modal" :class="{ 'open': activeModal === 'walletModal' }">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-base font-semibold">Connect Wallet</h3>
-          <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('walletModal')" aria-label="Cancel wallet connection">✕</button>
-        </div>
-        <div class="space-y-3">
-          <button class="button-secondary w-full text-sm py-2" :disabled="!isSignedIn" :class="{ 'button-secondary': isSignedIn, 'button-secondary:disabled': !isSignedIn }" @click="connectWallet('phantom')" aria-label="Connect with Phantom wallet">Phantom</button>
-          <button class="button-secondary w-full text-sm py-2" :disabled="!isSignedIn" :class="{ 'button-secondary': isSignedIn, 'button-secondary:disabled': !isSignedIn }" @click="connectWallet('solflare')" aria-label="Connect with Solflare wallet">Solflare</button>
-        </div>
+<div id="walletModal" class="fixed inset-0 flex items-end justify-center z-50 hidden">
+  <div class="modal-container" :class="{ 'open': activeModal === 'walletModal' }">
+    <div class="modal" :class="{ 'open': activeModal === 'walletModal' }">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-base font-semibold">Connect Wallet</h3>
+        <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('walletModal')" aria-label="Cancel wallet connection">✕</button>
+      </div>
+      <div class="space-y-3">
+        <button class="button-secondary w-full text-sm py-2" @click="connectWallet('phantom')" aria-label="Connect with Phantom wallet">Phantom</button>
+        <button class="button-secondary w-full text-sm py-2" @click="connectWallet('solflare')" aria-label="Connect with Solflare wallet">Solflare</button>
       </div>
     </div>
   </div>
+</div>
 
   <div id="helpModal" class="fixed inset-0 flex items-end justify-center z-50 hidden">
     <div class="modal-container" :class="{ 'open': activeModal === 'helpModal' }">
@@ -1362,6 +1294,5 @@
       setTimeout(() => toast.remove(), 3000);
     }
   </script>
-<script src="login.js"></script>
 </body>
 </html>
