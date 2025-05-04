@@ -7,6 +7,52 @@
 <title>MemePicks – Meme Coin Prop Betting</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<script>
+
+  function memepicksApp() {
+
+    return {
+
+      slip: { picks: [], wager: 0 },
+
+      showSlipTray: false,
+
+      multipliers: { 2: 3, 3: 5, 4: 10 },
+
+      init() {
+
+        console.log("✅ Alpine initialized");
+
+      }
+
+    };
+
+  }
+
+</script>
+<script>
+
+  function memepicksApp() {
+
+    return {
+
+      slip: { picks: [], wager: 0 },
+
+      showSlipTray: false,
+
+      multipliers: { 2: 3, 3: 5, 4: 10 },
+
+      init() {
+
+        console.log("✅ Alpine initialized");
+
+      }
+
+    };
+
+  }
+
+</script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <!-- <script src="/js/privy-sdk.js"></script> Privy SDK disabled -->
 
@@ -727,7 +773,6 @@
 //   &lt;div class="sticky-tabs" role六"tablist"&gt;
 // 
 //   <!-- Slip Preview Banner -->
-//     <span x-text="`${slip.picks.length} Picks – Potential: ${(slip.wager * multipliers[slip.picks.length] || 0).toFixed(2)} SOL`"></span>
 // 
 //   <!-- Main Content -->
 //   <main class="main-content" :class="{ 'slip-tray-open': showSlipTray }" x-transition:enter="fade-in" x-transition:leave="fade-in">
