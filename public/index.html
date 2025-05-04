@@ -10,11 +10,29 @@
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.93.0/lib/index.iife.min.js"></script>
   <!-- Privy SDK loaded early in head -->
-<!-- Privy SDK -->
-<script async src="https://sdk.privy.io/privy.js"></script>
+<script async src="https://cdn.privy.io/sdk/privy.js"></script>
 <script>
-  window.privy = window.privy || {};
-  privy.app_id = "cma934bmv01t2lb0mcn0mmz7a";
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (window.Privy) {
+      const privy = new window.Privy({
+        appId: "cma934bmv01t2lb0mcn0mmz7a",
+        onSuccess: (user) => {
+          console.log("Connected:", user);
+          localStorage.setItem("walletAddress", user.wallet.address);
+          location.reload();
+        },
+        onError: (err) => {
+          console.error("Privy error:", err);
+        }
+      });
+
+      // Bind to button if present
+      const loginBtn = document.getElementById("privy-login");
+      if (loginBtn) loginBtn.addEventListener("click", () => privy.login());
+    } else {
+      console.error("Privy SDK not loaded.");
+    }
+  });
 </script>
   <style>
     body {
