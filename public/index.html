@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>MemePicks – Meme Coin Prop Betting</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.93.0/lib/index.iife.min.js"></script>
+  <!-- Privy SDK loaded early in head -->
+  <script src="https://sdk.privy.io/privy.js" async></script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -318,6 +320,17 @@
       opacity: 1;
     }
 
+    /* Privy modal fix for mobile */
+    .privy-modal {
+      z-index: 9999 !important;
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      top: auto !important;
+      max-height: 90vh;
+    }
+
     @media (hover: none) {
       .button-secondary:active,
       .button-primary:active,
@@ -499,7 +512,7 @@
         z-index: 10;
       }
       .fab {
-        background: #7B61FF;
+        background: # Ascendant;
         color: #FFFFFF;
         padding: 12px 20px;
         border-radius: 24px;
@@ -571,7 +584,6 @@
       }
     }
   </style>
-<script defer src="https://auth.privy.io/embed.js"></script>
 </head>
 <body x-data="{
   tab: 'trending',
@@ -581,51 +593,41 @@
   showDrawer: false,
   showSlipTray: false,
   activeModal: null,
+  modals: {
+    walletModal: false,
+    helpModal: false,
+    modal: false
+  },
   slip: { picks: [], wager: 0 },
   multipliers: { 2: 2, 3: 5, 4: 10, 5: 20 },
   walletConnection: null,
 
-  init() {
-    console.log('Privy init loaded');
-    document.addEventListener('DOMContentLoaded', () => {
-      const privy = new Privy({
-        appId: 'cma934bmv01t2lb0mcn0mmz7a',
-        showModal: true,
-      });
-      window.privy = privy;
-    });
+  toggleBodyScroll(enabled) {
+    document.body.classList.toggle('modal-open', !enabled);
+    document.body.style.overflow = enabled ? 'auto' : 'hidden';
   },
 
-  openModal(modalId) {
+  openModal(name) {
     this.closeAllModals();
     this.showSlipTray = false;
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('hidden');
-    modal.classList.add('open');
-    this.activeModal = modalId;
+    this.modals[name] = true;
+    this.activeModal = name;
     this.toggleBodyScroll(false);
+    console.log('Opening modal:', name, document.querySelector('.privy-modal'));
   },
 
-  closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('open');
-    modal.classList.add('hidden');
+  closeModal(name) {
+    this.modals[name] = false;
     this.activeModal = null;
     this.toggleBodyScroll(true);
-    document.body.classList.remove('modal-open');
-    document.body.style.overflow = 'auto';
   },
 
   closeAllModals() {
-    ['walletModal', 'helpModal', 'modal'].forEach(id => {
-      const modal = document.getElementById(id);
-      modal.classList.remove('open');
-      modal.classList.add('hidden');
+    Object.keys(this.modals).forEach(name => {
+      this.modals[name] = false;
     });
     this.activeModal = null;
     this.toggleBodyScroll(true);
-    document.body.classList.remove('modal-open');
-    document.body.style.overflow = 'auto';
   },
 
   scrollTabIntoView(element) {
@@ -643,8 +645,6 @@
       this.toggleBodyScroll(false);
     } else {
       this.toggleBodyScroll(true);
-      document.body.classList.remove('modal-open');
-      document.body.style.overflow = 'auto';
     }
   },
 
@@ -711,11 +711,10 @@
   },
 
   connectWallet(walletType) {
-    window.privy = window.privy || {};
-    if (window.privy && window.privy.show) {
-      window.privy.show();
+    if (window.Privy && window.Privy.show) {
+      window.Privy.show();
     } else {
-      showToast('Failed to initialize wallet connection.');
+      showToast('Wallet connection not available.');
     }
   },
 
@@ -727,54 +726,47 @@
 }" @click.debounce.500ms.self="activeModal && closeAllModals()">
 
   <!-- Drawer Menu -->
-<div class="overlay" :class="{ 'open': showDrawer }" @click="showDrawer = false"></div>
-<div class="drawer" :class="{ 'open': showDrawer }">
-  <div class="p-4">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-semibold text-[#7B61FF]">MemePicks</h2>
-      <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="showDrawer = false" aria-label="Close drawer">✕</button>
-    </div>
-    <div class="space-y-2">
-      <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('walletModal')" aria-label="Connect Wallet">Connect Wallet</button>
-      <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; signOut()" aria-label="Disconnect Wallet">Disconnect Wallet</button>
-    </div>
-    <div class="space-y-2 mt-4">
-      <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; showHelpModal()" aria-label="Help Center">Help Center</a>
-      <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Responsible Betting">Responsible Betting</a>
-      <a href="https://discord.com" target="_blank" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Discord">Discord</a>
-      <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Terms & Privacy">Terms & Privacy</a>
-      <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Accessibility Options">Accessibility Options</a>
+  <div class="overlay" :class="{ 'open': showDrawer }" @click="showDrawer = false"></div>
+  <div class="drawer" :class="{ 'open': showDrawer }">
+    <div class="p-4">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-[#7B61FF]">MemePicks</h2>
+        <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="showDrawer = false" aria-label="Close drawer">✕</button>
+      </div>
+      <div class="space-y-2">
+        <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; openModal('walletModal')" aria-label="Connect Wallet">Connect Wallet</button>
+        <button class="block w-full text-left py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; signOut()" aria-label="Disconnect Wallet">Disconnect Wallet</button>
+      </div>
+      <div class="space-y-2 mt-4">
+        <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" @click="showDrawer = false; showHelpModal()" aria-label="Help Center">Help Center</a>
+        <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Responsible Betting">Responsible Betting</a>
+        <a href="https://discord.com" target="_blank" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Discord">Discord</a>
+        <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Terms & Privacy">Terms & Privacy</a>
+        <a href="#" class="block py-2 text-sm hover:text-[#7B61FF]" aria-label="Accessibility Options">Accessibility Options</a>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- Header -->
-<header class="fixed top-0 left-0 w-full bg-[#1A1A1A] z-20 header">
-  <div class="header-left">
-    <button class="hamburger" @click="showDrawer = true" aria-label="Open menu">☰</button>
-  </div>
-  <h1 class="logo">MemePicks</h1>
-  <div class="header-right flex items-center space-x-4 pr-4">
-    <div>
-      <p class="text-xs text-[#B0B0B0]" x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4) : 'Not Connected'"></p>
+  <header class="fixed top-0 left-0 w-full bg-[#1A1A1A] z-20 header">
+    <div class="header-left">
+      <button class="hamburger" @click="showDrawer = true" aria-label="Open menu">☰</button>
     </div>
-    <button class="button-auth text-sm py-2 px-3"
-      @click="walletAddress ? disconnectWallet() : openModal('walletModal')"
-      aria-label="Connect or Disconnect Wallet">
-      <span x-text="walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'"></span>
-    </button>
-  </div>
-<!-- Privy Wallet Connect Widget -->
-<div id="wallet-connect-wrapper" class="fixed bottom-4 left-0 w-full px-4 z-50">
-  <div class="bg-[#1F1F1F] border border-[#333] rounded-xl shadow-lg p-4 max-w-sm mx-auto">
-    <h2 class="text-sm font-semibold mb-2 text-white">Connect your wallet</h2>
-    <div id="privy-connect-button"></div>
-  </div>
-</div>
-</header>
+    <h1 class="logo">MemePicks</h1>
+    <div class="header-right flex items-center space-x-4 pr-4">
+      <div>
+        <p class="text-xs text-[#B0B0B0]" x-text="walletAddress ? walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4) : 'Not Connected'"></p>
+      </div>
+      <button class="button-auth text-sm py-2 px-3"
+        @click="walletAddress ? disconnectWallet() : openModal('walletModal')"
+        aria-label="Connect or Disconnect Wallet">
+        <span x-text="walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'"></span>
+      </button>
+    </div>
+  </header>
 
   <!-- Sticky Tabs -->
-  <div class="sticky-tabs" role="tablist">
+  <div class="sticky-tabs" role六"tablist">
     <div class="tabs" x-ref="tabs">
       <button :class="{ 'tab-button active': tab === 'trending', 'tab-button': tab !== 'trending' }" @click="tab = 'trending'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'trending'" :tabindex="tab === 'trending' ? 0 : -1">Trending</button>
       <button :class="{ 'tab-button active': tab === 'marketcap', 'tab-button': tab !== 'marketcap' }" @click="tab = 'marketcap'; scrollTabIntoView($el); closeAllModals()" class="px-4 py-2" role="tab" :aria-selected="tab === 'marketcap'" :tabindex="tab === 'marketcap' ? 0 : -1">MCap</button>
@@ -1255,10 +1247,25 @@
   </nav>
 
   <!-- Modals -->
+  <div id="walletModal" x-show="modals.walletModal" x-ref="walletModal" class="fixed inset-0 flex items-end justify-center z-50">
+    <div class="modal-container" :class="{ 'open': modals.walletModal }">
+      <div class="modal" :class="{ 'open': modals.walletModal }">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-base font-semibold">Connect Wallet</h3>
+          <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('walletModal')" aria-label="Close wallet modal">✕</button>
+        </div>
+        <div class="space-y-3">
+          <button class="button-primary w-full text-sm py-2" @click="connectWallet('phantom')" aria-label="Connect with Phantom">Connect with Phantom</button>
+          <button class="button-primary w-full text-sm py-2" @click="connectWallet('solflare')" aria-label="Connect with Solflare">Connect with Solflare</button>
+        </div>
+        <button class="button-secondary w-full text-sm py-2 mt-4" @click="closeModal('walletModal')" aria-label="Close wallet modal">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-  <div id="helpModal" class="fixed inset-0 flex items-end justify-center z-50 hidden">
-    <div class="modal-container" :class="{ 'open': activeModal === 'helpModal' }">
-      <div class="modal" :class="{ 'open': activeModal === 'helpModal' }">
+  <div id="helpModal" x-show="modals.helpModal" x-ref="helpModal" class="fixed inset-0 flex items-end justify-center z-50">
+    <div class="modal-container" :class="{ 'open': modals.helpModal }">
+      <div class="modal" :class="{ 'open': modals.helpModal }">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-base font-semibold">Help & Support</h3>
           <button class="text-[#B0B0B0] hover:text-red-500 w-8 h-8 flex items-center justify-center" @click="closeModal('helpModal')" aria-label="Close help modal">✕</button>
@@ -1274,9 +1281,9 @@
     </div>
   </div>
 
-  <div id="modal" class="fixed inset-0 flex items-end justify-center z-50 hidden">
-    <div class="modal-container" :class="{ 'open': activeModal === 'modal' }">
-      <div class="modal" :class="{ 'open': activeModal === 'modal' }">
+  <div id="modal" x-show="modals.modal" x-ref="modal" class="fixed inset-0 flex items-end justify-center z-50">
+    <div class="modal-container" :class="{ 'open': modals.modal }">
+      <div class="modal" :class="{ 'open': modals.modal }">
         <h3 id="modal-title" class="text-base font-semibold mb-3"></h3>
         <p id="modal-message" class="text-[#B0B0B0] text-sm mb-4"></p>
         <button class="button-primary w-full text-sm py-2" @click="closeModal('modal')" aria-label="Close modal">Close</button>
@@ -1293,6 +1300,22 @@
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 3000);
     }
+  </script>
+
+  <!-- Privy Initialization Script -->
+  <script>
+    window.addEventListener('load', () => {
+      if (window.Privy) {
+        console.log('Privy init loaded');
+        window.Privy.init({
+          appId: 'cma934bmv01t2lb0mcn0mmz7a',
+          showModal: true,
+        });
+      } else {
+        console.error('Privy not loaded');
+        showToast('Failed to initialize wallet connection.');
+      }
+    });
   </script>
 </body>
 </html>
