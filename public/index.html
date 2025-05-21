@@ -47,7 +47,7 @@
             position: relative; /* For dynamic background */
         }
 
-        /* Dynamic Background */
+        /* Dynamic Background - Opacity reduced to 0.03 */
         body::before {
             content: '';
             position: absolute;
@@ -56,7 +56,7 @@
             width: 100%;
             height: 100%;
             background: url('https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif') repeat; /* Glitchy GIF */
-            opacity: 0.05;
+            opacity: 0.03; /* Reduced opacity */
             pointer-events: none;
             z-index: -1;
         }
@@ -875,27 +875,7 @@
             box-shadow: 0 0 5px rgba(255,255,255,0.7);
         }
 
-        /* Heatmap styles */
-        #guess-heatmap {
-            position: relative;
-            width: 80%;
-            height: 20px;
-            background: #333;
-            border-radius: 5px;
-            margin: 1rem auto;
-            overflow: hidden;
-            display: flex; /* Use flex for heatmap bars */
-        }
-        #guess-heatmap .heatmap-bar {
-            height: 100%;
-            flex-grow: 1; /* Distribute space evenly */
-            background: rgba(255, 69, 0, 0); /* Default transparent */
-            border-right: 1px solid #000;
-            transition: background-color 0.3s ease-in-out;
-        }
-        #guess-heatmap .heatmap-bar:last-child {
-            border-right: none;
-        }
+        /* Heatmap styles - REMOVED */
 
         /* Level progress bar */
         #level-progress-container {
@@ -927,26 +907,7 @@
             color: white;
         }
 
-        /* Tooltip for VIP Room 3 */
-        .tooltip {
-            display: none;
-            position: absolute;
-            background: #333;
-            color: #fff;
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            bottom: 120%; /* Position above the lock div */
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            pointer-events: none; /* Allows hover on parent to trigger */
-        }
-        #vip-room-3-lock:hover .tooltip {
-            display: block;
-        }
+        /* Tooltip for VIP Room 3 - REMOVED */
     </style>
 </head>
 <body class="gradient-bg">
@@ -958,9 +919,10 @@
             <button id="profile-button" aria-label="Open profile">
                 <i class="fas fa-user"></i>
             </button>
-            <button id="sound-control" aria-label="Toggle sound">
-                <i class="fas fa-volume-up" id="sound-icon"></i>
-            </button>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-volume-up" id="sound-icon" style="color: #00ff00;"></i>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1" aria-label="Volume slider" style="width: 80px;">
+            </div>
             <button id="help-button" style="background: none; border: none; color: #00ff00; font-size: 1.5rem; cursor: pointer; transition: color 0.3s;">
                 <i class="fas fa-question-circle"></i>
             </button>
@@ -1055,7 +1017,7 @@
             </ul>
         </section>
 
-        <section id="vip-rooms" class="neon-border" style="margin-top: 1rem; padding: 1rem; background: #1a1a1a; border: 2px solid #00ff00; border-radius: 10px; opacity: 0.8;">
+        <section id="vip-rooms" class="neon-border" style="margin-top: 1rem; padding: 1rem; background: #1a1a1a; border: 2px solid #00ff00; border-radius: 10px; opacity: 0.9;">
             <h2 style="color: #00ff00; margin-bottom: 1rem;">VIP Rooms <i class="fas fa-crown" style="color: gold;"></i></h2>
             <ul style="list-style: none; font-size: 0.9rem;">
                 <li style="margin-bottom: 0.8rem; padding: 0.5rem; background: rgba(50, 50, 50, 0.5); border-radius: 5px; position: relative; overflow: hidden; cursor: not-allowed;">
@@ -1079,7 +1041,6 @@
                     </div>
                     <div id="vip-room-3-lock" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; color: white;">
                         Invite Only
-                        <span class="tooltip">Reach Level 15 and win 10 duels in VIP Room 2 to be invited!</span>
                     </div>
                 </li>
             </ul>
@@ -1216,8 +1177,9 @@
         const modalCloseButton = document.getElementById('modal-close-button');
         const loadingSpinnerOverlay = document.getElementById('loading-spinner-overlay');
         const toastContainer = document.getElementById('toast-container');
-        const soundControlButton = document.getElementById('sound-control');
+        // const soundControlButton = document.getElementById('sound-control'); // Removed mute toggle
         const soundIcon = document.getElementById('sound-icon');
+        const volumeSlider = document.getElementById('volume-slider'); // New volume slider
         const playerCardYou = document.getElementById('player-card-you');
         const playerCardOpponent = document.getElementById('player-card-opponent');
         const playerHealthFill = document.getElementById('player-health-fill');
@@ -1265,8 +1227,8 @@
         const levelProgressFill = document.getElementById('level-progress-fill');
         const levelProgressText = document.getElementById('level-progress-text');
 
-        // Declare guessHeatmap as a mutable variable
-        let guessHeatmap = null;
+        // Declare guessHeatmap as a mutable variable - REMOVED, no longer needed
+        // let guessHeatmap = null;
 
 
         // Game State Variables
@@ -1278,7 +1240,7 @@
         let currentGuessCount = 0;
         let opponentGuessCount = 0;
         let userPublicKey = null; // To store the connected wallet's public key
-        let isSoundMuted = false; // State for sound control
+        let currentVolume = 1; // Initial volume for sound control
         let hasUserInteracted = false; // New: Track if user has interacted for sound autoplay
         let stakeAmount = parseFloat(stakeAmountSelect.value); // Initialize stake amount
         let streakProtectionAvailable = false;
@@ -1286,12 +1248,12 @@
         let maxGuessRange = 100; // Player's current max guess range for Classic mode
         let opponentMinGuessRange = 1; // Opponent's current min guess range for Classic mode
         let opponentMaxGuessRange = 100; // Opponent's current max guess range for Classic mode
-        let gameMode = 'guess'; // 'guess', 'higher_lower', 'speed_round', 'team_duel'
-        let guessHistory = []; // For heatmap
+        let gameMode = 'guess'; // 'guess', 'higher_lower' (only these two now)
+        let guessHistory = []; // For heatmap - REMOVED, no longer needed
 
         // Turn-based variables
         let currentTurn = 'player'; // 'player' or 'opponent'
-        let turnTimer; // For Speed Round mode
+        let turnTimer; // For Speed Round mode - REMOVED, no longer needed
 
         // Higher or Lower mode specific ranges
         let playerRange = { min: 1, max: 100 };
@@ -1509,11 +1471,9 @@
         let backgroundAudio = null; // Declare backgroundAudio globally
 
         function playSound(effect, winAmount = 0) { // Added winAmount for conditional crowd cheer
-            if (isSoundMuted) return;
+            // Sound is now controlled by volume slider, not a mute toggle
+            if (currentVolume === 0) return;
 
-            // Do not attempt to play any sound if user has not interacted yet,
-            // unless it's a specific sound that needs to be queued or handled differently.
-            // For general game sounds, they should only play after interaction.
             if (!hasUserInteracted) {
                 console.log(`Sound effect '${effect}' blocked: User has not interacted yet.`);
                 return;
@@ -1525,6 +1485,7 @@
             if (!soundUrl) return;
 
             let audio = new Audio(soundUrl);
+            audio.volume = currentVolume; // Set volume
             let panValue = 0; // Center by default
 
             switch (effect) {
@@ -1532,6 +1493,7 @@
                     panValue = -0.8; // Left ear (winning from your side)
                     if (winAmount >= 0.5) { // Crowd cheer for big wins
                         const crowdCheer = new Audio(soundEffects.crowd_cheer[0]);
+                        crowdCheer.volume = currentVolume; // Set volume for crowd cheer
                         crowdCheer.play().catch(e => console.error("Error playing crowd cheer:", e));
                     }
                     break;
@@ -1561,11 +1523,11 @@
          * This function should be called after a user interaction.
          */
         function playBackgroundMusic() {
-            if (isSoundMuted || !hasUserInteracted) return;
+            if (currentVolume === 0 || !hasUserInteracted) return;
             if (!backgroundAudio) {
                 backgroundAudio = new Audio(soundEffects.background_loop[0]);
                 backgroundAudio.loop = true;
-                backgroundAudio.volume = 0.2;
+                backgroundAudio.volume = 0.2 * currentVolume; // Adjust background volume by slider
             }
             backgroundAudio.play().catch(e => console.error("Error playing background music:", e));
         }
@@ -1626,12 +1588,13 @@
          * Updates the active guesser count, optionally based on enhanced notifications setting.
          */
         function updateActiveGuesserCount() {
-            let activeCountElement = document.getElementById('active-guessers');
-            if (!userProfile.enhancedNotifications && activeCountElement) {
-                activeCountElement.remove(); // Remove if setting is off
+            if (!userProfile.enhancedNotifications) {
+                const activeCountElement = document.getElementById('active-guessers');
+                if (activeCountElement) activeCountElement.remove();
                 return;
             }
 
+            let activeCountElement = document.getElementById('active-guessers');
             if (!activeCountElement) {
                 activeCountElement = document.createElement('div');
                 activeCountElement.id = 'active-guessers';
@@ -1876,37 +1839,9 @@
         /**
          * Updates the heatmap to show guess distribution.
          * @param {number} guess - The current guess to add to the history.
+         * Removed as per user request.
          */
-        function updateGuessHeatMap(guess) {
-            // Ensure guessHeatmap element is available before trying to manipulate it
-            if (!guessHeatmap) {
-                console.error("guessHeatmap element is not defined. Cannot update heatmap.");
-                return;
-            }
-
-            if (guess !== null) {
-                guessHistory.push(guess);
-            }
-            guessHeatmap.innerHTML = ''; // Clear previous bars
-
-            const buckets = Array(10).fill(0); // 10 buckets for 1-100 (1-10, 11-20, etc.)
-            guessHistory.forEach(g => {
-                const bucketIndex = Math.min(9, Math.floor((g - 1) / 10));
-                buckets[bucketIndex]++;
-            });
-
-            const maxGuesses = Math.max(...buckets);
-
-            for (let i = 0; i < 10; i++) {
-                const count = buckets[i];
-                const intensity = maxGuesses > 0 ? (count / maxGuesses) : 0;
-                const bar = document.createElement('div');
-                bar.classList.add('heatmap-bar');
-                bar.style.backgroundColor = `rgba(255, 69, 0, ${intensity * 0.8})`; // Adjust opacity for visibility
-                bar.setAttribute('aria-label', `Guess frequency for range ${(i * 10) + 1} to ${(i + 1) * 10}: ${count} guesses`);
-                guessHeatmap.appendChild(bar);
-            }
-        }
+        // function updateGuessHeatMap(guess) { ... }
 
         /**
          * Updates the level progress bar.
@@ -1943,22 +1878,22 @@
             await connectWallet();
         });
 
-        // Sound Control
-        soundControlButton.addEventListener('click', () => {
+        // Sound Control (Volume Slider)
+        volumeSlider.addEventListener('input', () => {
             hasUserInteracted = true; // User interaction for sound
-            isSoundMuted = !isSoundMuted;
-            if (isSoundMuted) {
+            currentVolume = parseFloat(volumeSlider.value);
+            if (backgroundAudio) {
+                backgroundAudio.volume = 0.2 * currentVolume;
+            }
+            // Update sound icon based on volume
+            if (currentVolume === 0) {
                 soundIcon.classList.remove('fa-volume-up');
                 soundIcon.classList.add('fa-volume-mute');
-                queueNotification('toast', { message: 'Sound muted', type: 'success', forceShow: true });
-                if (backgroundAudio) backgroundAudio.pause(); // Pause background music
             } else {
                 soundIcon.classList.remove('fa-volume-mute');
                 soundIcon.classList.add('fa-volume-up');
-                queueNotification('toast', { message: 'Sound unmuted', type: 'success', forceShow: true });
-                playBackgroundMusic(); // Resume background music
             }
-            trackEvent('toggle_sound', 'settings', isSoundMuted ? 'muted' : 'unmuted');
+            trackEvent('set_volume', 'settings', currentVolume);
         });
 
         // Help Button
@@ -1979,7 +1914,7 @@
                 for (let i = 0; i < count; i++) {
                     setTimeout(() => {
                         const chipSound = new Audio('https://www.soundjay.com/buttons/sounds/button-09a.mp3');
-                        chipSound.volume = 0.7 + (Math.random() * 0.3);
+                        chipSound.volume = (0.7 + (Math.random() * 0.3)) * currentVolume; // Adjust by main volume
                         chipSound.play().catch(e => console.error("Error playing chip sound:", e));
                     }, i * 80);
                 }
@@ -2075,7 +2010,7 @@
             currentGuessCount = 0;
             opponentGuessCount = 0;
             duelResult.textContent = '';
-            guessHistory = []; // Clear heatmap history
+            // guessHistory = []; // Clear heatmap history - REMOVED
 
             // Reset guess ranges for Classic mode
             minGuessRange = 1;
@@ -2164,11 +2099,8 @@
                 setupClassicGuessModeUI();
             } else if (gameMode === 'higher_lower') {
                 startHigherLowerMode(); // This function already sets up its UI
-            } else if (gameMode === 'speed_round') {
-                startSpeedRoundMode(); // This function already sets up its UI
-            } else if (gameMode === 'team_duel') {
-                startTeamDuelMode(); // This function already sets up its UI
-            }
+            } 
+            // Removed speed_round and team_duel from initial setup
 
             // Start the main duel timer
             clearInterval(timerInterval); // Clear any previous timer
@@ -2241,18 +2173,17 @@
                     <div class="guess-range-fill" id="opponent-guess-range-fill" style="background: linear-gradient(to right, #ff4500, #ff0000);"></div>
                     <div class="guess-marker" id="opponent-guess-marker" style="background: #000;"></div>
                 </div>
-                <div id="guess-heatmap"></div>
-            `;
+                `;
             // Re-bind elements after innerHTML update
             guessInput = document.getElementById('guess-input');
             guessButton = document.getElementById('guess-button');
-            guessHeatmap = document.getElementById('guess-heatmap'); // Re-assign guessHeatmap
+            // guessHeatmap = document.getElementById('guess-heatmap'); // Re-assign guessHeatmap - REMOVED
             guessButton.addEventListener('click', handleGuessButtonClick);
             
             // Initialize range displays
             updateGuessRangeIndicator(minGuessRange, maxGuessRange, null, 'player');
             updateGuessRangeIndicator(opponentMinGuessRange, opponentMaxGuessRange, null, 'opponent');
-            updateGuessHeatMap(null); // Clear heatmap
+            // updateGuessHeatMap(null); // Clear heatmap - REMOVED
             duelStatus.textContent = 'Guess the number!';
             guessInput.value = ''; // Clear input
         }
@@ -2308,7 +2239,7 @@
                 }
                 updateGuessRangeIndicator(minGuessRange, maxGuessRange, guess, 'player');
                 document.getElementById('player-range-text').textContent = `${minGuessRange} - ${maxGuessRange}`;
-                updateGuessHeatMap(guess); // Update heatmap
+                // updateGuessHeatMap(guess); // Update heatmap - REMOVED
 
                 const feedback = document.createElement('div');
                 feedback.className = 'guess-feedback';
@@ -2383,6 +2314,7 @@
                 if (userProfile.behavioralData.responseToNearMisses > 0.5) {
                     setTimeout(() => {
                         const extraHeartbeat = new Audio('https://www.soundjay.com/human/heartbeat-01a.mp3');
+                        extraHeartbeat.volume = currentVolume; // Set volume
                         extraHeartbeat.play().catch(e => console.error("Error playing heartbeat:", e));
                     }, 1200);
                     duelTimer.style.color = 'red';
@@ -2434,6 +2366,7 @@
                 updateHealthBar(opponentHealthFill, parseFloat(opponentHealthFill.style.width) - Math.min(20, distance), false);
                 if (parseFloat(opponentHealthFill.style.width) <= 0) {
                     endDuel(true); // Player wins if opponent health drops to 0
+                    return;
                 }
             }
             // Update opponent's range indicator
@@ -2485,7 +2418,7 @@
             const playerRangeFill = document.getElementById('player-guess-range-fill');
             const opponentRangeFill = document.getElementById('opponent-guess-range-fill');
             // guessHeatmap is not used in this mode, but ensure it's not referenced if it was.
-            guessHeatmap = null; // Set to null as it's not present in this UI
+            // guessHeatmap = null; // Set to null as it's not present in this UI - REMOVED
 
             // Helper function to update a range indicator's visual fill and text
             function updateRangeIndicatorVisuals(range, fillElement, textElement) {
@@ -2629,211 +2562,13 @@
             document.getElementById('lower-button').disabled = false;
         }
 
-        /**
-         * Initializes and sets up the UI for Speed Round Mode.
-         */
-        function startSpeedRoundMode() {
-            gameMode = 'speed_round';
-            targetNumber = Math.floor(Math.random() * 100) + 1;
-            duelStatus.textContent = 'Speed Round: Guess within 10 seconds per turn!';
-            setupClassicGuessModeUI(); // Re-use classic guess UI
-            if (guessInput) guessInput.value = ''; // Clear input
-            if (guessButton) guessButton.disabled = false; // Enable for player's first turn
-
-            let turnTimeLeft = 10;
-            const duelArena = document.getElementById('duel-arena');
-            let speedRoundTimerDisplay = document.getElementById('speed-round-timer-display');
-            if (!speedRoundTimerDisplay) {
-                speedRoundTimerDisplay = document.createElement('p');
-                speedRoundTimerDisplay.id = 'speed-round-timer-display';
-                speedRoundTimerDisplay.style.cssText = `
-                    font-size: 1.2rem; color: #00ffff; margin-top: 0.5rem; font-weight: bold;
-                `;
-                duelArena.insertBefore(speedRoundTimerDisplay, duelResult);
-            }
-
-            function startTurnTimer() {
-                clearInterval(turnTimer); // Clear any existing turn timer
-                turnTimeLeft = 10;
-                speedRoundTimerDisplay.textContent = `Turn Time: ${turnTimeLeft}s`;
-                turnTimer = setInterval(() => {
-                    turnTimeLeft--;
-                    speedRoundTimerDisplay.textContent = `Turn Time: ${turnTimeLeft}s`;
-                    if (turnTimeLeft <= 0) {
-                        clearInterval(turnTimer);
-                        queueNotification('toast', { message: 'Time’s up! Turn skipped.', type: 'error', forceShow: true });
-                        if (currentTurn === 'player') {
-                            // Player's turn skipped, opponent takes turn
-                            currentTurn = 'opponent';
-                            updateTurnIndicator();
-                            if (guessButton) guessButton.disabled = true;
-                            setTimeout(simulateOpponentGuess, 1000);
-                        } else {
-                            // Opponent's turn skipped, player takes turn
-                            currentTurn = 'player';
-                            updateTurnIndicator();
-                            if (guessButton) guessButton.disabled = false;
-                        }
-                        startTurnTimer(); // Start timer for the next turn
-                    }
-                }, 1000);
-            }
-
-            // Override handleGuessButtonClick for Speed Round to reset timer
-            if (guessButton) {
-                guessButton.removeEventListener('click', handleGuessButtonClick); // Remove old handler
-                guessButton.addEventListener('click', () => {
-                    clearInterval(turnTimer); // Stop current turn timer
-                    handleGuessButtonClick(); // Execute original guess logic
-                    if (duelInProgress) { // Only start new timer if duel is still active
-                        startTurnTimer(); // Start timer for next turn
-                    }
-                });
-            }
-            startTurnTimer(); // Start the first turn timer
-        }
-
-        /**
-         * Initializes and sets up the UI for Team Duel Mode.
-         */
-        function startTeamDuelMode() {
-            gameMode = 'team_duel';
-            targetNumber = Math.floor(Math.random() * 100) + 1;
-            duelStatus.textContent = 'Team Duel: Collaborate to guess the number!';
-            
-            // For team duel, we'll use a single shared range indicator
-            guessSection.innerHTML = `
-                <input type="number" id="guess-input" min="1" max="100" placeholder="Team Guess (1-100)" aria-label="Enter your team's guess between 1 and 100">
-                <button id="guess-button" aria-label="Submit your team's guess">Guess</button>
-                <p>Team Range: <span id="player-range-text">1 - 100</span></p>
-                <div class="guess-range-container" id="player-guess-range-indicator">
-                    <div class="guess-range-fill" id="player-guess-range-fill"></div>
-                    <div class="guess-marker" id="player-guess-marker"></div>
-                </div>
-                <div id="guess-heatmap"></div>
-            `;
-            // Re-bind elements after innerHTML update
-            guessInput = document.getElementById('guess-input');
-            guessButton = document.getElementById('guess-button');
-            guessHeatmap = document.getElementById('guess-heatmap'); // Re-assign guessHeatmap
-            guessButton.addEventListener('click', handleTeamGuessButtonClick); // New handler for team duel
-
-            // Initialize team range display
-            updateGuessRangeIndicator(minGuessRange, maxGuessRange, null, 'player');
-            updateGuessHeatMap(null); // Clear heatmap
-            guessInput.value = ''; // Clear input
-
-            // Team duel specific turn logic
-            // For simplicity, we'll simulate alternating turns between 'Your Team' and 'Opponent Team'
-            // In a real multiplayer setting, this would involve server-side coordination.
-            currentTurn = 'player'; // Represents 'Your Team'
-            updateTurnIndicator();
-            if (guessButton) guessButton.disabled = false;
-        }
-
-        /**
-         * Handles a team's guess in Team Duel Mode.
-         */
-        function handleTeamGuessButtonClick() {
-            if (currentTurn !== 'player' || !duelInProgress) {
-                queueNotification('toast', { message: 'Wait for your team\'s turn!', type: 'error', forceShow: true });
-                return;
-            }
-
-            const guess = parseInt(guessInput.value);
-            if (isNaN(guess) || guess < 1 || guess > 100) {
-                queueNotification('toast', { message: 'Please enter a number between 1 and 100.', type: 'error', forceShow: true });
-                return;
-            }
-
-            currentGuessCount++; // This counts total guesses for the duel, not per team
-            playSound('guess');
-            
-            if (guess === targetNumber) {
-                endDuel(true); // Your team wins
-            } else {
-                const distance = Math.abs(guess - targetNumber);
-                if (guess < targetNumber) {
-                    minGuessRange = Math.max(minGuessRange, guess + 1);
-                    duelResult.textContent = 'Team Guess: Too low! Narrow your range.';
-                } else {
-                    maxGuessRange = Math.min(maxGuessRange, guess - 1);
-                    duelResult.textContent = 'Team Guess: Too high! Narrow your range.';
-                }
-                updateGuessRangeIndicator(minGuessRange, maxGuessRange, guess, 'player');
-                document.getElementById('player-range-text').textContent = `${minGuessRange} - ${maxGuessRange}`;
-                updateGuessHeatMap(guess);
-
-                // Health reduction for team if guess is wrong
-                updateHealthBar(playerHealthFill, parseFloat(playerHealthFill.style.width) - Math.min(15, distance), true);
-                if (parseFloat(playerHealthFill.style.width) <= 0) {
-                    endDuel(false); // Your team loses
-                    return;
-                }
-            }
-            guessInput.value = '';
-
-            // Switch turn to opponent team
-            guessButton.disabled = true;
-            currentTurn = 'opponent';
-            updateTurnIndicator();
-            setTimeout(simulateOpponentTeamGuess, 1000); // Opponent team guesses after 1 second
-        }
-
-        /**
-         * Simulates opponent team's guess in Team Duel Mode.
-         */
-        function simulateOpponentTeamGuess() {
-            if (!duelInProgress) return;
-
-            opponentGuessCount++; // This counts total guesses for the duel
-            let opponentTeamGuess;
-
-            // Opponent team's strategy: similar to single opponent, narrowing range
-            const currentOpponentRangeSize = opponentMaxGuessRange - opponentMinGuessRange + 1;
-            if (currentOpponentRangeSize <= 0) {
-                opponentTeamGuess = Math.floor(Math.random() * 100) + 1;
-            } else {
-                opponentTeamGuess = Math.floor(Math.random() * currentOpponentRangeSize) + opponentMinGuessRange;
-            }
-            opponentTeamGuess = Math.max(1, Math.min(100, opponentTeamGuess));
-
-            duelResult.textContent += `\nOpponent Team guessed ${opponentTeamGuess} - `;
-
-            if (opponentTeamGuess === targetNumber) {
-                endDuel(false); // Opponent team wins
-            } else {
-                if (opponentTeamGuess < targetNumber) {
-                    duelResult.textContent += 'Too low!';
-                    opponentMinGuessRange = Math.max(opponentMinGuessRange, opponentTeamGuess + 1);
-                } else {
-                    opponentMaxGuessRange = Math.min(opponentMaxGuessRange, opponentTeamGuess - 1);
-                }
-                const distance = Math.abs(opponentTeamGuess - targetNumber);
-                updateHealthBar(opponentHealthFill, parseFloat(opponentHealthFill.style.width) - Math.min(15, distance), false);
-                if (parseFloat(opponentHealthFill.style.width) <= 0) {
-                    endDuel(true); // Your team wins if opponent team health drops to 0
-                    return;
-                }
-            }
-            // Update the shared range indicator for the opponent team's perspective
-            // For team duel, we'll just update the player's range indicator to reflect the overall narrowed range
-            // as both teams are narrowing the same target.
-            // A more complex implementation might have separate "team knowledge" ranges.
-            updateGuessRangeIndicator(opponentMinGuessRange, opponentMaxGuessRange, opponentTeamGuess, 'player'); // Use player's indicator for shared range
-            document.getElementById('player-range-text').textContent = `${opponentMinGuessRange} - ${opponentMaxGuessRange}`; // Update shared text
-
-            // Switch turn back to player team
-            currentTurn = 'player';
-            updateTurnIndicator();
-            if (guessButton) guessButton.disabled = false;
-        }
+        // Removed Speed Round and Team Duel Mode functions
 
 
         // Define a function to finalize the duel ending
         function finalizeEndDuel(playerWon) {
             clearInterval(timerInterval);
-            clearInterval(turnTimer); // Clear turn timer for Speed Round
+            // clearInterval(turnTimer); // Clear turn timer for Speed Round - REMOVED
             duelInProgress = false;
             guessSection.style.display = 'none';
             document.getElementById('turn-indicator').style.display = 'none'; // Hide turn indicator
@@ -2853,7 +2588,8 @@
                 resultMessage = `You won ${winAmount.toFixed(2)} SOL! Guessed in ${currentGuessCount} tries.`;
                 modalTitleText = 'VICTORY!';
                 playSound('win', winAmount); // Pass winAmount for conditional crowd cheer
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                // Reduced confetti particle count by 30%
+                confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
 
                 for (let i = 0; i < 20; i++) {
                     const coin = document.createElement('div');
@@ -2871,7 +2607,7 @@
 
                 document.addEventListener('mousemove', function followCursorConfetti(e) {
                     confetti({
-                        particleCount: 5, startVelocity: 20, spread: 50,
+                        particleCount: 3, startVelocity: 20, spread: 50, // Reduced particle count
                         origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight },
                         colors: ['#00ff00', '#ff4500', '#ffd700', '#00ffff', '#ff00ff'], scalar: 0.7
                     });
@@ -2952,6 +2688,7 @@
                     document.body.appendChild(freeEntryModal);
 
                     const comebackSound = new Audio('https://www.myinstants.com/media/sounds/power-up.mp3');
+                    comebackSound.volume = currentVolume; // Set volume
                     comebackSound.play().catch(e => console.error("Error playing comeback sound:", e));
 
                     const freeEntryButton = freeEntryModal.querySelector('button');
@@ -3086,9 +2823,9 @@
                     document.body.appendChild(levelUpOverlay);
                     playSound('level_up');
 
-                    // Add confetti for level up
+                    // Reduced confetti particle count by 30%
                     confetti({
-                        particleCount: 100,
+                        particleCount: 70,
                         spread: 70,
                         origin: { y: 0.3 }
                     });
@@ -3300,7 +3037,7 @@
             duelTimer.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
             queueNotification('toast', { message: 'Try guessing between 1 and 100!', type: 'success', forceShow: true });
             currentGuessCount = 0;
-            guessHistory = []; // Clear heatmap history
+            // guessHistory = []; // Clear heatmap history - REMOVED
 
             // Setup classic guess mode UI for demo
             setupClassicGuessModeUI();
@@ -3480,7 +3217,8 @@
 
                     if (selectedReward.value >= 0.05) {
                         setTimeout(() => {
-                            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                            // Reduced confetti particle count by 30%
+                            confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
                         }, 3000);
                     }
                 }, 100);
@@ -3556,12 +3294,12 @@
             trackEvent('demo_duel_started', 'onboarding', 'button_click');
         });
 
-        // Game Mode Toggle
+        // Game Mode Toggle - Now only cycles between Classic and Higher/Lower
         const modeToggle = document.getElementById('mode-toggle');
         modeToggle.addEventListener('click', () => {
             hasUserInteracted = true; // User interaction for sound
             playBackgroundMusic(); // Start background music after interaction
-            // Clear any existing turn timers when switching modes
+            // Clear any existing turn timers when switching modes (though not used in these two modes)
             clearInterval(turnTimer); 
 
             if (gameMode === 'guess') {
@@ -3569,16 +3307,8 @@
                 modeToggle.textContent = 'Switch to Classic Guess Mode';
                 startHigherLowerMode();
             } else if (gameMode === 'higher_lower') {
-                gameMode = 'speed_round';
-                modeToggle.textContent = 'Switch to Team Duel Mode';
-                startSpeedRoundMode();
-            } else if (gameMode === 'speed_round') {
-                gameMode = 'team_duel';
-                modeToggle.textContent = 'Switch to Higher/Lower Mode';
-                startTeamDuelMode();
-            } else if (gameMode === 'team_duel') {
                 gameMode = 'guess';
-                modeToggle.textContent = 'Switch to Speed Round Mode';
+                modeToggle.textContent = 'Switch to Higher/Lower Mode';
                 setupClassicGuessModeUI(); // Revert to classic guess UI
             }
             // Reset common game state variables for new mode
@@ -3589,8 +3319,7 @@
             currentGuessCount = 0;
             opponentGuessCount = 0;
             duelResult.textContent = '';
-            guessHistory = []; // Clear heatmap history
-            // guessHeatmap will be re-assigned in setupClassicGuessModeUI/startTeamDuelMode/startSpeedRoundMode
+            // guessHistory = []; // Clear heatmap history - REMOVED
 
             // Reset ranges for new mode
             minGuessRange = 1;
@@ -3605,7 +3334,7 @@
             guessSection.style.display = 'block'; // Ensure guess section is visible
             
             // Re-enable buttons based on the new mode's initial state
-            if (gameMode === 'guess' || gameMode === 'speed_round' || gameMode === 'team_duel') {
+            if (gameMode === 'guess') {
                 if (guessButton) guessButton.disabled = false;
             } else if (gameMode === 'higher_lower') {
                 const higherButton = document.getElementById('higher-button');
@@ -3614,6 +3343,30 @@
                 if (lowerButton) lowerButton.disabled = false;
             }
         });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Spacebar for guess/higher/lower button
+            if (e.code === 'Space' && duelInProgress && currentTurn === 'player') {
+                e.preventDefault(); // Prevent scrolling
+                if (gameMode === 'guess' && guessButton && !guessButton.disabled) {
+                    guessButton.click();
+                } else if (gameMode === 'higher_lower') {
+                    const higherButton = document.getElementById('higher-button');
+                    const lowerButton = document.getElementById('lower-button');
+                    if (higherButton && !higherButton.disabled) {
+                        higherButton.click(); // Default to higher for space, or could be last clicked
+                    } else if (lowerButton && !lowerButton.disabled) {
+                        lowerButton.click();
+                    }
+                }
+            }
+            // H for help button
+            if (e.key === 'h' || e.key === 'H') {
+                helpButton.click();
+            }
+        });
+
 
         // Initial calls
         checkOnboarding();
