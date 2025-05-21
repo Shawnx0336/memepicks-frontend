@@ -1279,6 +1279,7 @@
         let opponentGuessCount = 0;
         let userPublicKey = null; // To store the connected wallet's public key
         let isSoundMuted = false; // State for sound control
+        let hasUserInteracted = false; // New: Track if user has interacted for sound autoplay
         let stakeAmount = parseFloat(stakeAmountSelect.value); // Initialize stake amount
         let streakProtectionAvailable = false;
         let minGuessRange = 1; // Player's current min guess range for Classic mode
@@ -1505,8 +1506,18 @@
             crowd_cheer: ['https://www.myinstants.com/media/sounds/crowd-cheer.mp3']
         };
 
+        let backgroundAudio = null; // Declare backgroundAudio globally
+
         function playSound(effect, winAmount = 0) { // Added winAmount for conditional crowd cheer
             if (isSoundMuted) return;
+
+            // Do not attempt to play any sound if user has not interacted yet,
+            // unless it's a specific sound that needs to be queued or handled differently.
+            // For general game sounds, they should only play after interaction.
+            if (!hasUserInteracted) {
+                console.log(`Sound effect '${effect}' blocked: User has not interacted yet.`);
+                return;
+            }
 
             const soundArray = soundEffects[effect] || [];
             const soundUrl = soundArray[Math.floor(Math.random() * soundArray.length)] || '';
@@ -1530,10 +1541,6 @@
                 case 'guess':
                     panValue = Math.random() * 1.6 - 0.8; // Between -0.8 and 0.8
                     break;
-                case 'background_loop':
-                    audio.loop = true;
-                    audio.volume = 0.2; // Keep background sound low
-                    break;
             }
 
             try {
@@ -1547,6 +1554,20 @@
             } catch (e) {
                 audio.play().catch(e => console.error("Error playing sound:", e));
             }
+        }
+
+        /**
+         * Plays the background music loop.
+         * This function should be called after a user interaction.
+         */
+        function playBackgroundMusic() {
+            if (isSoundMuted || !hasUserInteracted) return;
+            if (!backgroundAudio) {
+                backgroundAudio = new Audio(soundEffects.background_loop[0]);
+                backgroundAudio.loop = true;
+                backgroundAudio.volume = 0.2;
+            }
+            backgroundAudio.play().catch(e => console.error("Error playing background music:", e));
         }
 
         /**
@@ -1917,26 +1938,33 @@
 
         // Wallet Connection
         connectWalletButton.addEventListener('click', async () => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             await connectWallet();
         });
 
         // Sound Control
         soundControlButton.addEventListener('click', () => {
+            hasUserInteracted = true; // User interaction for sound
             isSoundMuted = !isSoundMuted;
             if (isSoundMuted) {
                 soundIcon.classList.remove('fa-volume-up');
                 soundIcon.classList.add('fa-volume-mute');
                 queueNotification('toast', { message: 'Sound muted', type: 'success', forceShow: true });
+                if (backgroundAudio) backgroundAudio.pause(); // Pause background music
             } else {
                 soundIcon.classList.remove('fa-volume-mute');
                 soundIcon.classList.add('fa-volume-up');
                 queueNotification('toast', { message: 'Sound unmuted', type: 'success', forceShow: true });
+                playBackgroundMusic(); // Resume background music
             }
             trackEvent('toggle_sound', 'settings', isSoundMuted ? 'muted' : 'unmuted');
         });
 
         // Help Button
         helpButton.addEventListener('click', () => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             onboardingModal.style.display = 'flex';
             // Ensure keyboard focus for accessibility
             document.getElementById('start-onboarding-button').focus();
@@ -2399,7 +2427,6 @@
                     duelResult.textContent += 'Too low!';
                     opponentMinGuessRange = Math.max(opponentMinGuessRange, opponentGuess + 1);
                 } else {
-                    duelResult.textContent += 'Too high!';
                     opponentMaxGuessRange = Math.min(opponentMaxGuessRange, opponentGuess - 1);
                 }
                 const distance = Math.abs(opponentGuess - targetNumber);
@@ -2780,7 +2807,6 @@
                     duelResult.textContent += 'Too low!';
                     opponentMinGuessRange = Math.max(opponentMinGuessRange, opponentTeamGuess + 1);
                 } else {
-                    duelResult.textContent += 'Too high!';
                     opponentMaxGuessRange = Math.min(opponentMaxGuessRange, opponentTeamGuess - 1);
                 }
                 const distance = Math.abs(opponentTeamGuess - targetNumber);
@@ -3158,6 +3184,8 @@
 
         // Open Profile Modal
         profileButton.addEventListener('click', () => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             if (!isWalletConnected) {
                 queueNotification('toast', { message: 'Connect your wallet to edit your profile.', type: 'error', forceShow: true });
                 return;
@@ -3262,6 +3290,8 @@
 
         // --- Demo Duel Logic ---
         function startDemoDuel() {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             onboardingModal.style.display = 'none';
             duelStatus.textContent = 'Demo Mode: Guess the number!';
             stakeSection.style.display = 'none'; // Hide stake section in demo
@@ -3308,6 +3338,8 @@
 
         // Emoji Picker setup
         emojiToggle.addEventListener('click', () => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
             trackEvent('toggle_emoji_picker', 'chat', emojiPicker.style.display === 'block' ? 'open' : 'close');
         });
@@ -3325,6 +3357,8 @@
 
         // Add jackpot button handler
         document.getElementById('jackpot-button').addEventListener('click', () => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             if (!isWalletConnected) {
                 showTransactionModal('MEGA JACKPOT EVENT', 'Connect your wallet to join the 5 SOL MEGA JACKPOT event!<br><br>Over 100 players already participating!');
                 connectWalletButton.click();
@@ -3348,6 +3382,8 @@
         let pullThreshold = 100;
         let pullRefreshCooldown = false;
         document.addEventListener('touchstart', (e) => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             if (window.scrollY === 0) {
                 lastY = e.touches[0].clientY;
                 isPulling = true;
@@ -3484,6 +3520,8 @@
 
         // Add click handler for VIP room upgrade button
         document.querySelector('#vip-rooms button').addEventListener('click', () => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             showTransactionModal('VIP Access', 'Upgrade to VIP to access exclusive high-stakes rooms!<br><br>Special offer: 50% OFF today only!<br><br><button style="background: gold; color: black; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold;">GET VIP FOR 0.5 SOL</button>');
             trackEvent('upgrade_click', 'vip', 'rooms');
         });
@@ -3499,6 +3537,8 @@
         }
 
         startOnboardingButton.addEventListener('click', () => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             onboardingModal.style.display = 'none';
             trackEvent('onboarding_complete', 'onboarding', 'button_click');
             // Optionally, connect wallet automatically or prompt user
@@ -3510,6 +3550,8 @@
         });
 
         startDemoDuelButton.addEventListener('click', () => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             startDemoDuel();
             trackEvent('demo_duel_started', 'onboarding', 'button_click');
         });
@@ -3517,6 +3559,8 @@
         // Game Mode Toggle
         const modeToggle = document.getElementById('mode-toggle');
         modeToggle.addEventListener('click', () => {
+            hasUserInteracted = true; // User interaction for sound
+            playBackgroundMusic(); // Start background music after interaction
             // Clear any existing turn timers when switching modes
             clearInterval(turnTimer); 
 
@@ -3573,8 +3617,7 @@
 
         // Initial calls
         checkOnboarding();
-        playSound('background_loop'); // Start ambient background sound
-        setupClassicGuessModeUI(); // Set up the default Classic Guess UI on load
+        // Removed direct playSound('background_loop') here. It will be triggered by user interaction.
     </script>
 </body>
 </html>
