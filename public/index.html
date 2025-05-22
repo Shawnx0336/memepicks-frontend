@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="SolDuel - A Solana-based social dueling game for degens. Stake SOL, guess the number, and win in 30-second live duels!">
     <meta name="keywords" content="Solana, SolDuel, crypto game, degen, staking, skill game">
     <meta name="author" content="YourName">
@@ -365,6 +365,14 @@
             padding: 1rem;
             text-align: center;
             position: relative; /* For player cards positioning */
+            width: 100%; /* Added for responsiveness */
+            max-width: 100%; /* Added for responsiveness */
+            height: auto; /* Added for responsiveness */
+            min-height: 400px; /* Adjust based on content */
+            box-sizing: border-box; /* Added for responsiveness */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-y: auto; /* Allow vertical scrolling if content overflows */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
         }
 
         #duel-arena h2 {
@@ -438,7 +446,7 @@
             width: 100%; /* Represents 100% health */
             height: 100%;
             background: linear-gradient(to right, #00ff00, #00cc00);
-            border-radius: 5px;
+            border-radius: 55px;
             transition: width 0.5s ease-out; /* Smooth health transitions */
         }
 
@@ -461,9 +469,10 @@
         #duel-timer {
             font-size: 1.8rem; /* Increased size */
             color: #ff4500;
-            margin-bottom: 1rem;
+            margin: 10px 0; /* Adjusted margin */
             font-weight: bold;
             animation: neon-glow 1s infinite alternate; /* Added glow */
+            text-align: center; /* Added for responsiveness */
         }
 
         #guess-input {
@@ -476,6 +485,10 @@
             border: 1px solid #00ff00;
             border-radius: 5px;
             text-align: center;
+            -webkit-appearance: none; /* Removed default iOS styling */
+            -moz-appearance: none;
+            appearance: none;
+            touch-action: manipulation; /* Improved touch responsiveness */
         }
 
         #guess-button {
@@ -487,6 +500,10 @@
             cursor: pointer;
             transition: background 0.3s, transform 0.1s;
             box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            -webkit-appearance: none; /* Removed default iOS styling */
+            -moz-appearance: none;
+            appearance: none;
+            touch-action: manipulation; /* Improved touch responsiveness */
         }
 
         #guess-button:hover {
@@ -514,6 +531,14 @@
             color: #fff;
             border: 1px solid #00ff00;
             border-radius: 5px;
+            width: 100%; /* Added for responsiveness */
+            padding: 8px; /* Adjusted padding */
+            margin-bottom: 10px; /* Adjusted margin */
+            box-sizing: border-box; /* Ensures padding is included in width */
+            -webkit-appearance: none; /* Removed default iOS styling */
+            -moz-appearance: none;
+            appearance: none;
+            touch-action: manipulation; /* Improved touch responsiveness */
         }
 
         /* Chat */
@@ -664,12 +689,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             display: none; /* Hidden by default */
+            overflow-y: auto; /* Allow scrolling if content overflows */
         }
 
         .modal-content {
@@ -681,6 +707,7 @@
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
             max-width: 400px;
             width: 90%;
+            box-sizing: border-box; /* Ensures padding is included in width */
         }
 
         .modal-content h3 {
@@ -908,6 +935,77 @@
         }
 
         /* Tooltip for VIP Room 3 - REMOVED */
+
+        /* Mobile-Specific Optimizations */
+        @media (max-width: 768px) {
+            #duel-arena {
+                padding: 5px;
+                min-height: 300px;
+            }
+            #live-badge {
+                top: 5px;
+                left: 5px;
+                font-size: 0.8rem;
+                padding: 3px 6px;
+                max-width: 90%; /* Prevent elements from being cut off */
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .guess-feedback {
+                top: 50%;
+                font-size: clamp(0.8rem, 3vw, 1.5rem);
+                max-width: 90%; /* Prevent elements from being cut off */
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            #active-guessers {
+                bottom: 5px;
+                right: 5px;
+                font-size: 0.7rem;
+                padding: 3px 6px;
+                max-width: 90%; /* Prevent elements from being cut off */
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            #stake-amount, #guess-input, #guess-button {
+                font-size: 0.9rem;
+                padding: 6px;
+                width: 100%; /* Ensure full width on mobile */
+            }
+            #guess-section {
+                padding: 5px;
+            }
+            #duel-timer {
+                font-size: 1.2rem;
+                margin: 5px 0;
+            }
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+            .modal-content h3 {
+                font-size: 1.2rem;
+            }
+            .modal-content p {
+                font-size: 0.9rem;
+            }
+            .modal-content button {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            /* Stack elements vertically within duel arena */
+            #duel-arena > *:not(.player-cards):not(#duel-timer):not(#turn-indicator):not(#live-badge):not(#spectator-count):not(.multiplier-badge):not(#active-guessers) {
+                display: block;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* CSS to disable animations */
+        .no-animations * {
+            animation: none !important;
+            transition: none !important;
+        }
     </style>
 </head>
 <body class="gradient-bg">
@@ -1177,7 +1275,6 @@
         const modalCloseButton = document.getElementById('modal-close-button');
         const loadingSpinnerOverlay = document.getElementById('loading-spinner-overlay');
         const toastContainer = document.getElementById('toast-container');
-        // const soundControlButton = document.getElementById('sound-control'); // Removed mute toggle
         const soundIcon = document.getElementById('sound-icon');
         const volumeSlider = document.getElementById('volume-slider'); // New volume slider
         const playerCardYou = document.getElementById('player-card-you');
@@ -1226,10 +1323,6 @@
         const levelProgressContainer = document.getElementById('level-progress-container');
         const levelProgressFill = document.getElementById('level-progress-fill');
         const levelProgressText = document.getElementById('level-progress-text');
-
-        // Declare guessHeatmap as a mutable variable - REMOVED, no longer needed
-        // let guessHeatmap = null;
-
 
         // Game State Variables
         let isWalletConnected = false;
@@ -1514,7 +1607,7 @@
                 panner.connect(audioCtx.destination);
                 audio.play().catch(e => console.error("Error playing sound:", e));
             } catch (e) {
-                audio.play().catch(e => console.error("Error playing sound:", e));
+                audio.play().catch(e => console.error("Error playing sound (fallback):", e)); // More specific error
             }
         }
 
@@ -1868,6 +1961,167 @@
             // VIP Room 3 "Invite Only" remains hardcoded.
         }
 
+        // Define a function to finalize the duel ending - MOVED TO GLOBAL SCOPE
+        function endDuel(playerWon) {
+            clearInterval(timerInterval);
+            // clearInterval(turnTimer); // Clear turn timer for Speed Round - REMOVED
+            duelInProgress = false;
+            guessSection.style.display = 'none';
+            document.getElementById('turn-indicator').style.display = 'none'; // Hide turn indicator
+
+            // Restore original opponent behavior if it was overridden for first win guarantee
+            if (originalSimulateOpponentGuesses) {
+                simulateOpponentGuess = originalSimulateOpponentGuesses;
+                originalSimulateOpponentGuesses = null;
+            }
+
+            let resultMessage = '';
+            let modalTitleText = '';
+            const currentStakeAmount = parseFloat(stakeAmountSelect.value);
+
+            if (playerWon) {
+                const winAmount = currentStakeAmount * (window.currentPayoutMultiplier || 1.9);
+                resultMessage = `You won ${winAmount.toFixed(2)} SOL! Guessed in ${currentGuessCount} tries.`;
+                modalTitleText = 'VICTORY!';
+                playSound('win', winAmount); // Pass winAmount for conditional crowd cheer
+                // Reduced confetti particle count by 30%
+                confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
+
+                for (let i = 0; i < 20; i++) {
+                    const coin = document.createElement('div');
+                    coin.className = 'sol-coin';
+                    coin.style.cssText = `
+                        position: fixed; top: -50px; left: ${Math.random() * 100}vw;
+                        width: 40px; height: 40px;
+                        background: url('https://cryptologos.cc/logos/solana-sol-logo.png') center/contain no-repeat;
+                        z-index: 1000; filter: drop-shadow(0 0 10px gold);
+                        animation: coinFall 1.5s ease-in forwards; animation-delay: ${Math.random() * 1}s;
+                    `;
+                    document.body.appendChild(coin);
+                    setTimeout(() => coin.remove(), 3000);
+                }
+
+                document.addEventListener('mousemove', function followCursorConfetti(e) {
+                    confetti({
+                        particleCount: 3, startVelocity: 20, spread: 50, // Reduced particle count
+                        origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight },
+                        colors: ['#00ff00', '#ff4500', '#ffd700', '#00ffff', '#ff00ff'], scalar: 0.7
+                    });
+                    setTimeout(() => { document.removeEventListener('mousemove', followCursorConfetti); }, 5000);
+                });
+
+                addChatMessage('🔥 @You: I won ' + winAmount.toFixed(2) + ' SOL!');
+                playerCardYou.classList.add('winner');
+                playerCardOpponent.classList.add('loser');
+                updateHealthBar(opponentHealthFill, 0, false);
+                userProfile.wins++;
+                userProfile.streak++;
+                userProfile.currentLossStreak = 0;
+                userProfile.hasWonFirst = true; // Mark first win
+                checkLevelUp(); // Check for level up after win
+                const currentBalance = parseFloat(walletBalanceDisplay.textContent.split(': ')[1]) || 0;
+                updateBalanceDisplay((currentBalance + winAmount) * 1000000000);
+
+                if (userProfile.streak === 3) {
+                    queueNotification('toast', { message: '🔥 3-Win Streak! Free 0.01 SOL entry for your next duel!', type: 'success' });
+                }
+                trackEvent('duel_ended', 'game', 'win');
+
+                localStorage.setItem('lastWin', 'true');
+                localStorage.setItem('lastWinAmount', winAmount.toFixed(2).toString());
+                localStorage.setItem('lastWinTime', Date.now().toString());
+
+            } else if (timeLeft <= 0) {
+                // Time-out condition for Higher/Lower mode
+                if (gameMode === 'higher_lower') {
+                    const playerRangeSize = playerRange.max - playerRange.min;
+                    const opponentRangeSize = opponentRange.max - opponentRange.min;
+                    playerWon = playerRangeSize < opponentRangeSize; // Player wins if their range is narrower
+                    resultMessage = `Time’s up! ${playerWon ? 'You' : 'Opponent'} wins with a narrower range (${playerWon ? playerRangeSize : opponentRangeSize} vs ${playerWon ? opponentRangeSize : playerRangeSize}).`;
+                } else {
+                    resultMessage = `Time’s up! Closest guess wins. You: ${guessInput ? guessInput.value : 'N/A'}, Opponent: ${opponentGuessCount} tries.`;
+                }
+                modalTitleText = 'TIME UP!';
+                playSound('lose');
+                addChatMessage('⏳ Duel ended by time!');
+                userProfile.losses++;
+                userProfile.streak = 0;
+                userProfile.currentLossStreak++;
+                trackEvent('duel_ended', 'game', 'time_up');
+            } else {
+                resultMessage = `Opponent won! They guessed in ${opponentGuessCount} tries.`;
+                modalTitleText = 'DEFEAT!';
+                playSound('lose');
+                document.body.classList.add('shake');
+                document.body.addEventListener('animationend', () => {
+                    document.body.classList.remove('shake');
+                }, { once: true });
+                addChatMessage('💀 @CryptoChad: Easy win!');
+                playerCardYou.classList.add('loser');
+                playerCardOpponent.classList.add('winner');
+                updateHealthBar(playerHealthFill, 0, true);
+                userProfile.losses++;
+                userProfile.streak = 0;
+                userProfile.currentLossStreak++;
+                trackEvent('duel_ended', 'game', 'loss');
+            }
+            saveProfile();
+
+            if (userProfile.currentLossStreak >= 3 && !userProfile.freeEntryAvailable) {
+                userProfile.freeEntryAvailable = true;
+                setTimeout(() => {
+                    const freeEntryModal = document.createElement('div');
+                    freeEntryModal.className = 'modal-overlay';
+                    freeEntryModal.style.zIndex = '2000';
+                    freeEntryModal.innerHTML = `
+                        <div class="modal-content" style="border: 3px solid #00ff00; background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);">
+                            <h3 style="color: #00ff00; text-shadow: 0 0 10px #00ff00;">DON'T GIVE UP!</h3>
+                            <p style="font-size: 1.2rem; margin: 20px 0;">We've added a <span style="color: #00ff00; font-weight: bold; font-size: 1.5rem;">FREE 0.01 SOL ENTRY</span> to your account!</p>
+                            <p style="margin-bottom: 20px; color: #aaa;">This is your comeback moment. Many winners started with a loss streak!</p>
+                            <button style="background: linear-gradient(45deg, #00ff00, #00cc00); padding: 15px 30px; font-size: 1.2rem; margin-top: 10px; animation: pulse 1s infinite alternate;">PLAY FREE ROUND</button>
+                        </div>
+                    `;
+                    document.body.appendChild(freeEntryModal);
+
+                    const comebackSound = new Audio('https://www.myinstants.com/media/sounds/power-up.mp3');
+                    comebackSound.volume = currentVolume; // Set volume
+                    comebackSound.play().catch(e => console.error("Error playing comeback sound:", e));
+
+                    const freeEntryButton = freeEntryModal.querySelector('button');
+                    freeEntryButton.addEventListener('click', () => {
+                        freeEntryModal.remove();
+                        startDuel();
+                    });
+                    trackEvent('free_entry_offered', 'retention', 'loss_streak');
+                }, 2000);
+            }
+
+            duelResult.textContent = resultMessage;
+            showTransactionModal(modalTitleText, resultMessage + "<br><button id=\"share-win-button\" style=\"background: #1DA1F2; margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 1rem; color: #fff; border-radius: 5px; cursor: pointer; border: none;\">Share Win on X</button>");
+
+            const shareWinButton = document.getElementById('share-win-button');
+            if (shareWinButton) {
+                shareWinButton.addEventListener('click', () => {
+                    const tweetText = encodeURIComponent(`I just won ${playerWon ? (currentStakeAmount * (window.currentPayoutMultiplier || 1.9)).toFixed(2) + ' SOL' : 'a duel'} on SolDuel! 🔥 Join the Degen Arena: ${window.location.href} #SolDuel #Degen`);
+                    window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
+                    trackEvent('share_win', 'social', playerWon ? 'win' : 'loss');
+                });
+            }
+            updateLeaderboard(playerWon);
+
+            if (!playerWon) {
+                document.getElementById('modal-close-button').addEventListener('click', () => {
+                    userProfile.behavioralData.chaseRatio =
+                        (userProfile.behavioralData.chaseRatio * 5 + 1) / 6;
+                    saveProfile();
+                });
+
+                if (userProfile.behavioralData.chaseRatio > 0.7 && stakeAmount >= 0.05) {
+                    queueNotification('toast', { message: "Your comeback is coming! The next guess could be it!", type: "success" });
+                }
+            }
+        }
+
 
         // --- Event Listeners and Game Logic ---
 
@@ -2010,7 +2264,6 @@
             currentGuessCount = 0;
             opponentGuessCount = 0;
             duelResult.textContent = '';
-            // guessHistory = []; // Clear heatmap history - REMOVED
 
             // Reset guess ranges for Classic mode
             minGuessRange = 1;
@@ -2100,7 +2353,6 @@
             } else if (gameMode === 'higher_lower') {
                 startHigherLowerMode(); // This function already sets up its UI
             } 
-            // Removed speed_round and team_duel from initial setup
 
             // Start the main duel timer
             clearInterval(timerInterval); // Clear any previous timer
@@ -2177,13 +2429,11 @@
             // Re-bind elements after innerHTML update
             guessInput = document.getElementById('guess-input');
             guessButton = document.getElementById('guess-button');
-            // guessHeatmap = document.getElementById('guess-heatmap'); // Re-assign guessHeatmap - REMOVED
             guessButton.addEventListener('click', handleGuessButtonClick);
             
             // Initialize range displays
             updateGuessRangeIndicator(minGuessRange, maxGuessRange, null, 'player');
             updateGuessRangeIndicator(opponentMinGuessRange, opponentMaxGuessRange, null, 'opponent');
-            // updateGuessHeatMap(null); // Clear heatmap - REMOVED
             duelStatus.textContent = 'Guess the number!';
             guessInput.value = ''; // Clear input
         }
@@ -2239,7 +2489,6 @@
                 }
                 updateGuessRangeIndicator(minGuessRange, maxGuessRange, guess, 'player');
                 document.getElementById('player-range-text').textContent = `${minGuessRange} - ${maxGuessRange}`;
-                // updateGuessHeatMap(guess); // Update heatmap - REMOVED
 
                 const feedback = document.createElement('div');
                 feedback.className = 'guess-feedback';
@@ -2417,8 +2666,6 @@
             const opponentRangeText = document.getElementById('opponent-range-text');
             const playerRangeFill = document.getElementById('player-guess-range-fill');
             const opponentRangeFill = document.getElementById('opponent-guess-range-fill');
-            // guessHeatmap is not used in this mode, but ensure it's not referenced if it was.
-            // guessHeatmap = null; // Set to null as it's not present in this UI - REMOVED
 
             // Helper function to update a range indicator's visual fill and text
             function updateRangeIndicatorVisuals(range, fillElement, textElement) {
@@ -2562,169 +2809,6 @@
             document.getElementById('lower-button').disabled = false;
         }
 
-        // Removed Speed Round and Team Duel Mode functions
-
-
-        // Define a function to finalize the duel ending
-        function finalizeEndDuel(playerWon) {
-            clearInterval(timerInterval);
-            // clearInterval(turnTimer); // Clear turn timer for Speed Round - REMOVED
-            duelInProgress = false;
-            guessSection.style.display = 'none';
-            document.getElementById('turn-indicator').style.display = 'none'; // Hide turn indicator
-
-            // Restore original opponent behavior if it was overridden for first win guarantee
-            if (originalSimulateOpponentGuesses) {
-                simulateOpponentGuess = originalSimulateOpponentGuesses;
-                originalSimulateOpponentGuesses = null;
-            }
-
-            let resultMessage = '';
-            let modalTitleText = '';
-            const currentStakeAmount = parseFloat(stakeAmountSelect.value);
-
-            if (playerWon) {
-                const winAmount = currentStakeAmount * (window.currentPayoutMultiplier || 1.9);
-                resultMessage = `You won ${winAmount.toFixed(2)} SOL! Guessed in ${currentGuessCount} tries.`;
-                modalTitleText = 'VICTORY!';
-                playSound('win', winAmount); // Pass winAmount for conditional crowd cheer
-                // Reduced confetti particle count by 30%
-                confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
-
-                for (let i = 0; i < 20; i++) {
-                    const coin = document.createElement('div');
-                    coin.className = 'sol-coin';
-                    coin.style.cssText = `
-                        position: fixed; top: -50px; left: ${Math.random() * 100}vw;
-                        width: 40px; height: 40px;
-                        background: url('https://cryptologos.cc/logos/solana-sol-logo.png') center/contain no-repeat;
-                        z-index: 1000; filter: drop-shadow(0 0 10px gold);
-                        animation: coinFall 1.5s ease-in forwards; animation-delay: ${Math.random() * 1}s;
-                    `;
-                    document.body.appendChild(coin);
-                    setTimeout(() => coin.remove(), 3000);
-                }
-
-                document.addEventListener('mousemove', function followCursorConfetti(e) {
-                    confetti({
-                        particleCount: 3, startVelocity: 20, spread: 50, // Reduced particle count
-                        origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight },
-                        colors: ['#00ff00', '#ff4500', '#ffd700', '#00ffff', '#ff00ff'], scalar: 0.7
-                    });
-                    setTimeout(() => { document.removeEventListener('mousemove', followCursorConfetti); }, 5000);
-                });
-
-                addChatMessage('🔥 @You: I won ' + winAmount.toFixed(2) + ' SOL!');
-                playerCardYou.classList.add('winner');
-                playerCardOpponent.classList.add('loser');
-                updateHealthBar(opponentHealthFill, 0, false);
-                userProfile.wins++;
-                userProfile.streak++;
-                userProfile.currentLossStreak = 0;
-                userProfile.hasWonFirst = true; // Mark first win
-                checkLevelUp(); // Check for level up after win
-                const currentBalance = parseFloat(walletBalanceDisplay.textContent.split(': ')[1]) || 0;
-                updateBalanceDisplay((currentBalance + winAmount) * 1000000000);
-
-                if (userProfile.streak === 3) {
-                    queueNotification('toast', { message: '🔥 3-Win Streak! Free 0.01 SOL entry for your next duel!', type: 'success' });
-                }
-                trackEvent('duel_ended', 'game', 'win');
-
-                localStorage.setItem('lastWin', 'true');
-                localStorage.setItem('lastWinAmount', winAmount.toFixed(2).toString());
-                localStorage.setItem('lastWinTime', Date.now().toString());
-
-            } else if (timeLeft <= 0) {
-                // Time-out condition for Higher/Lower mode
-                if (gameMode === 'higher_lower') {
-                    const playerRangeSize = playerRange.max - playerRange.min;
-                    const opponentRangeSize = opponentRange.max - opponentRange.min;
-                    playerWon = playerRangeSize < opponentRangeSize; // Player wins if their range is narrower
-                    resultMessage = `Time’s up! ${playerWon ? 'You' : 'Opponent'} wins with a narrower range (${playerWon ? playerRangeSize : opponentRangeSize} vs ${playerWon ? opponentRangeSize : playerRangeSize}).`;
-                } else {
-                    resultMessage = `Time’s up! Closest guess wins. You: ${guessInput ? guessInput.value : 'N/A'}, Opponent: ${opponentGuessCount} tries.`;
-                }
-                modalTitleText = 'TIME UP!';
-                playSound('lose');
-                addChatMessage('⏳ Duel ended by time!');
-                userProfile.losses++;
-                userProfile.streak = 0;
-                userProfile.currentLossStreak++;
-                trackEvent('duel_ended', 'game', 'time_up');
-            } else {
-                resultMessage = `Opponent won! They guessed in ${opponentGuessCount} tries.`;
-                modalTitleText = 'DEFEAT!';
-                playSound('lose');
-                document.body.classList.add('shake');
-                document.body.addEventListener('animationend', () => {
-                    document.body.classList.remove('shake');
-                }, { once: true });
-                addChatMessage('💀 @CryptoChad: Easy win!');
-                playerCardYou.classList.add('loser');
-                playerCardOpponent.classList.add('winner');
-                updateHealthBar(playerHealthFill, 0, true);
-                userProfile.losses++;
-                userProfile.streak = 0;
-                userProfile.currentLossStreak++;
-                trackEvent('duel_ended', 'game', 'loss');
-            }
-            saveProfile();
-
-            if (userProfile.currentLossStreak >= 3 && !userProfile.freeEntryAvailable) {
-                userProfile.freeEntryAvailable = true;
-                setTimeout(() => {
-                    const freeEntryModal = document.createElement('div');
-                    freeEntryModal.className = 'modal-overlay';
-                    freeEntryModal.style.zIndex = '2000';
-                    freeEntryModal.innerHTML = `
-                        <div class="modal-content" style="border: 3px solid #00ff00; background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);">
-                            <h3 style="color: #00ff00; text-shadow: 0 0 10px #00ff00;">DON'T GIVE UP!</h3>
-                            <p style="font-size: 1.2rem; margin: 20px 0;">We've added a <span style="color: #00ff00; font-weight: bold; font-size: 1.5rem;">FREE 0.01 SOL ENTRY</span> to your account!</p>
-                            <p style="margin-bottom: 20px; color: #aaa;">This is your comeback moment. Many winners started with a loss streak!</p>
-                            <button style="background: linear-gradient(45deg, #00ff00, #00cc00); padding: 15px 30px; font-size: 1.2rem; margin-top: 10px; animation: pulse 1s infinite alternate;">PLAY FREE ROUND</button>
-                        </div>
-                    `;
-                    document.body.appendChild(freeEntryModal);
-
-                    const comebackSound = new Audio('https://www.myinstants.com/media/sounds/power-up.mp3');
-                    comebackSound.volume = currentVolume; // Set volume
-                    comebackSound.play().catch(e => console.error("Error playing comeback sound:", e));
-
-                    const freeEntryButton = freeEntryModal.querySelector('button');
-                    freeEntryButton.addEventListener('click', () => {
-                        freeEntryModal.remove();
-                        startDuel();
-                    });
-                    trackEvent('free_entry_offered', 'retention', 'loss_streak');
-                }, 2000);
-            }
-
-            duelResult.textContent = resultMessage;
-            showTransactionModal(modalTitleText, resultMessage + "<br><button id=\"share-win-button\" style=\"background: #1DA1F2; margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 1rem; color: #fff; border-radius: 5px; cursor: pointer; border: none;\">Share Win on X</button>");
-
-            const shareWinButton = document.getElementById('share-win-button');
-            if (shareWinButton) {
-                shareWinButton.addEventListener('click', () => {
-                    const tweetText = encodeURIComponent(`I just won ${playerWon ? (currentStakeAmount * (window.currentPayoutMultiplier || 1.9)).toFixed(2) + ' SOL' : 'a duel'} on SolDuel! 🔥 Join the Degen Arena: ${window.location.href} #SolDuel #Degen`);
-                    window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
-                    trackEvent('share_win', 'social', playerWon ? 'win' : 'loss');
-                });
-            }
-            updateLeaderboard(playerWon);
-
-            if (!playerWon) {
-                document.getElementById('modal-close-button').addEventListener('click', () => {
-                    userProfile.behavioralData.chaseRatio =
-                        (userProfile.behavioralData.chaseRatio * 5 + 1) / 6;
-                    saveProfile();
-                });
-
-                if (userProfile.behavioralData.chaseRatio > 0.7 && stakeAmount >= 0.05) {
-                    queueNotification('toast', { message: "Your comeback is coming! The next guess could be it!", type: "success" });
-                }
-            }
-        }
 
         // Close transaction modal and prepare for new duel
         modalCloseButton.addEventListener('click', () => {
@@ -2804,9 +2888,9 @@
                 setTimeout(() => {
                     // Create level-up animation
                     const levelUpOverlay = document.createElement('div');
-                    levelUpOverlay.className = 'level-up-overlay';
+                    levelUpOverlay.className = 'modal-overlay';
                     levelUpOverlay.innerHTML = `
-                        <div class="level-up-content">
+                        <div class="modal-content" style="border: 3px solid gold; background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);">
                             <h2>LEVEL UP!</h2>
                             <div class="level-number">${newLevel}</div>
                             <div class="level-rewards">
@@ -3037,7 +3121,6 @@
             duelTimer.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
             queueNotification('toast', { message: 'Try guessing between 1 and 100!', type: 'success', forceShow: true });
             currentGuessCount = 0;
-            // guessHistory = []; // Clear heatmap history - REMOVED
 
             // Setup classic guess mode UI for demo
             setupClassicGuessModeUI();
@@ -3217,7 +3300,6 @@
 
                     if (selectedReward.value >= 0.05) {
                         setTimeout(() => {
-                            // Reduced confetti particle count by 30%
                             confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
                         }, 3000);
                     }
@@ -3319,7 +3401,6 @@
             currentGuessCount = 0;
             opponentGuessCount = 0;
             duelResult.textContent = '';
-            // guessHistory = []; // Clear heatmap history - REMOVED
 
             // Reset ranges for new mode
             minGuessRange = 1;
@@ -3349,7 +3430,7 @@
             // Spacebar for guess/higher/lower button
             if (e.code === 'Space' && duelInProgress && currentTurn === 'player') {
                 e.preventDefault(); // Prevent scrolling
-                if (gameMode === 'guess' && guessButton && !guessButton.disabled) {
+                if (gameMode === 'guess' && guessInput && guessButton && !guessButton.disabled) { // Added null checks for guessInput
                     guessButton.click();
                 } else if (gameMode === 'higher_lower') {
                     const higherButton = document.getElementById('higher-button');
@@ -3371,6 +3452,12 @@
         // Initial calls
         checkOnboarding();
         // Removed direct playSound('background_loop') here. It will be triggered by user interaction.
+
+        // Implement a toggle for animations (UI for this would be in settings)
+        const disableAnimations = localStorage.getItem('disableAnimations') === 'true';
+        if (disableAnimations) {
+            document.body.classList.add('no-animations');
+        }
     </script>
 </body>
 </html>
