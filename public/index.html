@@ -1196,8 +1196,7 @@
             <div id="guess-section" style="display: none;">
                 </div>
             <p id="duel-result"></p>
-            <button id="mode-toggle" style="position: absolute; bottom: 10px; right: 10px; background: #ff4500; color: #fff; border: none; padding: 0.5rem; border-radius: 5px;">Switch to Higher/Lower Mode</button>
-        </section>
+            </section>
 
         <section id="chat-section" class="neon-border">
             <h2>Degen Chat <i class="fas fa-comments"></i></h2>
@@ -1469,10 +1468,12 @@
         let isWalletConnected = false;
         let duelInProgress = false;
         let timerInterval;
-        let timeLeft = 30;
+        let turnTimer; // For 5-second turn countdown
+        let timeLeft = 30; // Overall duel timer
+        let turnTimeLeft = 5; // Per-turn timer
         let targetNumber = Math.floor(Math.random() * 100) + 1; // Simulated hidden number
-        let currentGuessCount = 0;
-        let opponentGuessCount = 0;
+        let currentGuessCount = 0; // Total guesses in duel
+        let opponentGuessCount = 0; // Total opponent guesses in duel
         let userPublicKey = null; // To store the connected wallet's public key
         let currentVolume = 1; // Initial volume for sound control
         let streakProtectionAvailable = false;
@@ -1480,16 +1481,16 @@
         let maxGuessRange = 100; // Player's current max guess range for Classic mode
         let opponentMinGuessRange = 1; // Opponent's current min guess range for Classic mode
         let opponentMaxGuessRange = 100; // Opponent's current max guess range for Classic mode
-        let gameMode = 'guess'; // 'guess', 'higher_lower' (only these two now)
-        let guessHistory = []; // For heatmap - REMOVED, no longer needed
+        let gameMode = 'guess'; // Always 'guess' now
+        let hasUserInteracted = false; // Track if user has interacted for sound autoplay
 
         // Turn-based variables
         let currentTurn = 'player'; // 'player' or 'opponent'
-        let turnTimer; // For Speed Round mode - REMOVED, no longer needed
-
-        // Higher or Lower mode specific ranges
-        let playerRange = { min: 1, max: 100 };
-        let opponentRange = { min: 1, max: 100 };
+        const maxGuessesPerPlayer = 5; // Max guesses each player gets
+        let guesses = {
+            player: [],
+            opponent: []
+        };
 
         // Notification Queue
         let notificationQueue = [];
@@ -1800,16 +1801,6 @@
          * @param {boolean} isPlayer - True if it's the player's health bar.
          */
         function updateHealthBar(healthBarFillElement, percentage, isPlayer = false) {
-            // Original logic for health bar update based on guess count for player
-            // and fixed amount for opponent in classic mode.
-            // This is now mainly used for 'wrong' guesses in Higher/Lower mode.
-            if (gameMode === 'guess' && isPlayer) {
-                // Less harsh early guesses
-                percentage = Math.max(0, percentage - (currentGuessCount <= 3 ? 3 : 5));
-            } else if (gameMode === 'guess' && !isPlayer) {
-                // Opponent's health increases on player's correct guess, decreases on player's wrong guess
-                // This logic is now handled more directly in simulateOpponentGuess for clarity.
-            }
             healthBarFillElement.style.transition = isPlayer ? 'width 0.3s ease-in' : 'width 0.8s ease-out';
             healthBarFillElement.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
         }
@@ -1823,7 +1814,7 @@
         }, 5000); // Debounce to prevent frequent DOM updates
 
         /**
-         * Updates the guessing status bubble, optionally based on enhanced notifications setting.
+         * Updates the guessing status bubble.
          */
         function updateGuessPill() {
             if (!userProfile.enhancedNotifications) {
@@ -1834,13 +1825,7 @@
             if (guessPill) {
                 guessPill.style.display = 'block';
                 const activeGuessers = Math.floor(Math.random() * 20) + 5; // Simulate active guessers
-                let modeText = '';
-                if (gameMode === 'guess') {
-                    modeText = 'Classic';
-                } else if (gameMode === 'higher_lower') {
-                    modeText = 'Higher/Lower';
-                }
-                guessPill.textContent = `🔁 ${modeText} | 👥 ${activeGuessers} guessing`;
+                guessPill.textContent = `🔁 Classic | 👥 ${activeGuessers} guessing`;
             }
         }
 
@@ -2080,13 +2065,6 @@
         }
 
         /**
-         * Updates the heatmap to show guess distribution.
-         * @param {number} guess - The current guess to add to the history.
-         * Removed as per user request.
-         */
-        // function updateGuessHeatMap(guess) { ... }
-
-        /**
          * Updates the level progress bar.
          */
         function updateLevelProgress() {
@@ -2111,10 +2089,13 @@
             // VIP Room 3 "Invite Only" remains hardcoded.
         }
 
-        // Define a function to finalize the duel ending - MOVED TO GLOBAL SCOPE
-        function endDuel(playerWon) {
-            clearInterval(timerInterval);
-            // clearInterval(turnTimer); // Clear turn timer for Speed Round - REMOVED
+        /**
+         * Ends the duel and determines the winner/loser or a draw.
+         * @param {boolean|string} result - True if player won, false if opponent won, 'draw' for a draw.
+         */
+        function endDuel(result) {
+            clearInterval(timerInterval); // Clear overall duel timer
+            clearTimeout(turnTimer); // Clear turn timer
             duelInProgress = false;
             guessSection.style.display = 'none';
             document.getElementById('turn-indicator').style.display = 'none'; // Hide turn indicator
@@ -2128,13 +2109,14 @@
             let resultMessage = '';
             let modalTitleText = '';
             const currentStakeAmount = parseFloat(stakeAmountSelect.value);
+            let playerWon = false;
 
-            if (playerWon) {
+            if (result === true) { // Player wins
+                playerWon = true;
                 const winAmount = currentStakeAmount * (window.currentPayoutMultiplier || 1.9);
-                resultMessage = `You won ${winAmount.toFixed(2)} SOL! Guessed in ${currentGuessCount} tries.`;
+                resultMessage = `You won ${winAmount.toFixed(2)} SOL! Guessed in ${guesses.player.length} tries.`;
                 modalTitleText = 'VICTORY!';
-                playSound('win', winAmount); // Pass winAmount for conditional crowd cheer
-                // Reduced confetti particle count by 30%
+                playSound('win', winAmount);
                 confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
 
                 for (let i = 0; i < 20; i++) {
@@ -2153,7 +2135,7 @@
 
                 document.addEventListener('mousemove', function followCursorConfetti(e) {
                     confetti({
-                        particleCount: 3, startVelocity: 20, spread: 50, // Reduced particle count
+                        particleCount: 3, startVelocity: 20, spread: 50,
                         origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight },
                         colors: ['#00ff00', '#ff4500', '#ffd700', '#00ffff', '#ff00ff'], scalar: 0.7
                     });
@@ -2167,8 +2149,8 @@
                 userProfile.wins++;
                 userProfile.streak++;
                 userProfile.currentLossStreak = 0;
-                userProfile.hasWonFirst = true; // Mark first win
-                checkLevelUp(); // Check for level up after win
+                userProfile.hasWonFirst = true;
+                checkLevelUp();
                 const currentBalance = parseFloat(walletBalanceDisplay.textContent.split(': ')[1]) || 0;
                 updateBalanceDisplay((currentBalance + winAmount) * 1000000000);
 
@@ -2181,26 +2163,15 @@
                 localStorage.setItem('lastWinAmount', winAmount.toFixed(2).toString());
                 localStorage.setItem('lastWinTime', Date.now().toString());
 
-            } else if (timeLeft <= 0) {
-                // Time-out condition for Higher/Lower mode
-                if (gameMode === 'higher_lower') {
-                    const playerRangeSize = playerRange.max - playerRange.min;
-                    const opponentRangeSize = opponentRange.max - opponentRange.min;
-                    playerWon = playerRangeSize < opponentRangeSize; // Player wins if their range is narrower
-                    resultMessage = `Time’s up! ${playerWon ? 'You' : 'Opponent'} wins with a narrower range (${playerWon ? playerRangeSize : opponentRangeSize} vs ${playerWon ? opponentRangeSize : playerRangeSize}).`;
+            } else if (result === false) { // Opponent wins or player loses by time/health
+                playerWon = false;
+                if (timeLeft <= 0) {
+                    resultMessage = `Time’s up! Opponent wins.`;
+                    modalTitleText = 'TIME UP!';
                 } else {
-                    resultMessage = `Time’s up! Closest guess wins. You: ${guessInput ? guessInput.value : 'N/A'}, Opponent: ${opponentGuessCount} tries.`;
+                    resultMessage = `Opponent won! They guessed in ${guesses.opponent.length} tries.`;
+                    modalTitleText = 'DEFEAT!';
                 }
-                modalTitleText = 'TIME UP!';
-                playSound('lose');
-                addChatMessage('⏳ Duel ended by time!');
-                userProfile.losses++;
-                userProfile.streak = 0;
-                userProfile.currentLossStreak++;
-                trackEvent('duel_ended', 'game', 'time_up');
-            } else {
-                resultMessage = `Opponent won! They guessed in ${opponentGuessCount} tries.`;
-                modalTitleText = 'DEFEAT!';
                 playSound('lose');
                 document.body.classList.add('shake');
                 document.body.addEventListener('animationend', () => {
@@ -2214,6 +2185,17 @@
                 userProfile.streak = 0;
                 userProfile.currentLossStreak++;
                 trackEvent('duel_ended', 'game', 'loss');
+            } else if (result === 'draw') { // Draw game
+                playerWon = false; // For tracking purposes, not a win
+                resultMessage = `It's a draw! Pot refunded.`;
+                modalTitleText = 'DRAW!';
+                playSound('level_up'); // Neutral sound for draw
+                addChatMessage('🤝 Duel ended in a draw!');
+                // Refund logic (assuming stakes are already taken out at start of duel)
+                const refundAmount = currentStakeAmount;
+                const currentBalance = parseFloat(walletBalanceDisplay.textContent.split(': ')[1]) || 0;
+                updateBalanceDisplay((currentBalance + refundAmount) * 1000000000);
+                trackEvent('duel_ended', 'game', 'draw');
             }
             saveProfile();
 
@@ -2269,6 +2251,78 @@
                 if (userProfile.behavioralData.chaseRatio > 0.7 && stakeAmount >= 0.05) {
                     queueNotification('toast', { message: "Your comeback is coming! The next guess could be it!", type: "success" });
                 }
+            }
+        }
+
+        /**
+         * Handles a draw game.
+         */
+        function drawGame() {
+            endDuel('draw');
+        }
+
+        /**
+         * Starts the 5-second turn timer.
+         */
+        function startTurnTimer() {
+            clearTimeout(turnTimer); // Clear any existing turn timer
+            turnTimeLeft = 5; // Reset turn timer
+            updateTurnTimerDisplay(); // Initial display update
+            turnTimer = setInterval(() => {
+                turnTimeLeft--;
+                updateTurnTimerDisplay();
+                if (turnTimeLeft <= 0) {
+                    clearInterval(turnTimer);
+                    handleSkippedTurn();
+                }
+            }, 1000);
+        }
+
+        /**
+         * Updates the display for the current turn's timer.
+         */
+        function updateTurnTimerDisplay() {
+            duelTimer.textContent = `00:0${turnTimeLeft}`;
+            if (turnTimeLeft <= 2) {
+                duelTimer.style.color = '#ff0000';
+            } else {
+                duelTimer.style.color = '#00ff00';
+            }
+        }
+
+        /**
+         * Handles a turn being skipped due to time running out.
+         */
+        function handleSkippedTurn() {
+            showToast(`${currentTurn === 'player' ? 'Your' : 'Opponent\'s'} turn skipped! No guess made.`, 'warning');
+            // Apply penalty (e.g., health reduction)
+            if (currentTurn === 'player') {
+                const currentHealth = parseFloat(playerHealthFill.style.width) || 100;
+                updateHealthBar(playerHealthFill, currentHealth - 20, true); // Player loses 20 health
+                if (currentHealth - 20 <= 0) {
+                    endDuel(false); // Player loses
+                    return;
+                }
+            } else {
+                const currentHealth = parseFloat(opponentHealthFill.style.width) || 100;
+                updateHealthBar(opponentHealthFill, currentHealth - 20, false); // Opponent loses 20 health
+                if (currentHealth - 20 <= 0) {
+                    endDuel(true); // Player wins
+                    return;
+                }
+            }
+
+            // Switch turn
+            currentTurn = currentTurn === 'player' ? 'opponent' : 'player';
+            updateTurnIndicator();
+            startTurnTimer(); // Start timer for the next turn
+            if (currentTurn === 'player') {
+                if (guessInput) guessInput.disabled = false;
+                if (guessButton) guessButton.disabled = false;
+            } else {
+                if (guessInput) guessInput.disabled = true;
+                if (guessButton) guessButton.disabled = true;
+                setTimeout(simulateOpponentGuess, 1000); // Opponent guesses after 1 second
             }
         }
 
@@ -2347,7 +2401,7 @@
             }
 
             if (stakeAmount >= 0.1) {
-                queueNotification('toast', { message: 'High stakes activated! Higher payout potential!', type: 'success' });
+                showToast('High stakes activated! Higher payout potential!', 'success');
             }
         });
 
@@ -2422,12 +2476,13 @@
             duelStatus.textContent = 'Opponent found: @CryptoChad - 0.1 SOL pot';
             stakeSection.style.display = 'block';
             duelInProgress = true;
-            timeLeft = 30;
+            timeLeft = 30; // Overall duel timer
             duelTimer.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
             targetNumber = Math.floor(Math.random() * 100) + 1;
             currentGuessCount = 0;
             opponentGuessCount = 0;
             duelResult.textContent = '';
+            guesses = { player: [], opponent: [] }; // Reset guesses for new duel
 
             // Reset guess ranges for Classic mode
             minGuessRange = 1;
@@ -2475,9 +2530,10 @@
                 originalSimulateOpponentGuesses = simulateOpponentGuess; // Store original
                 // Override opponent behavior to always guess wrong and give hints
                 simulateOpponentGuess = function() {
-                    if (!duelInProgress) return;
-                    opponentGuessCount++;
-                    // Opponent always guesses wrong, but close to target
+                    if (!duelInProgress || currentTurn !== 'opponent') return; // Ensure it's opponent's turn
+
+                    guesses.opponent.push(null); // Mark a guess for opponent
+
                     let opponentGuess;
                     if (targetNumber > 50) {
                         opponentGuess = Math.floor(Math.random() * 40) + 1; // Guess low
@@ -2488,80 +2544,60 @@
                         opponentMinGuessRange = Math.max(opponentMinGuessRange, opponentGuess + 1); // Narrow opponent's range
                         duelResult.textContent += `\nOpponent guessed ${opponentGuess} - Too high!`;
                     }
-                    updateHealthBar(playerHealthFill, parseFloat(playerHealthFill.style.width) - 5, true); // Player takes minimal damage
+                    // Opponent takes damage for wrong guess
+                    updateHealthBar(opponentHealthFill, parseFloat(opponentHealthFill.style.width) - 20, false); // Opponent takes significant damage
                     updateGuessRangeIndicator(opponentMinGuessRange, opponentMaxGuessRange, opponentGuess, 'opponent');
 
-
-                    if (opponentGuessCount >= 2 && opponentGuessCount <= 4) {
-                        addChatMessage("💬 @CryptoChad: I'm getting close... maybe around 50?");
-                    } else if (opponentGuessCount === 5) {
-                        addChatMessage("💬 @DegenKing: This is harder than it looks!");
+                    if (guesses.opponent.length >= maxGuessesPerPlayer) {
+                        drawGame(); // Check for draw if max guesses reached
+                        return;
                     }
 
-                    // End turn for opponent
+                    if (guesses.opponent.length === 1) { // First opponent guess
+                        addChatMessage("💬 @CryptoChad: I'm just warming up...");
+                    } else if (guesses.opponent.length === 2) {
+                        addChatMessage("💬 @DegenKing: Getting closer, I can feel it!");
+                    } else if (guesses.opponent.length === 3) {
+                        addChatMessage("💬 @CryptoChad: Hmm, this is tricky. Maybe around 50?"); // Hint for player
+                    }
+
+
+                    // End turn for opponent, start player's turn
                     currentTurn = 'player';
                     updateTurnIndicator();
+                    if (guessInput) guessInput.disabled = false;
                     if (guessButton) guessButton.disabled = false;
+                    startTurnTimer(); // Start timer for player's turn
                 };
 
                 setTimeout(() => {
-                    if (duelInProgress && currentGuessCount === 0) {
+                    if (duelInProgress && guesses.player.length === 0) {
                         showToast("Hint: Try guessing 50!", "success");
                     }
                 }, 20000);
             }
 
-            // Set up the initial game mode UI
-            if (gameMode === 'guess') {
-                setupClassicGuessModeUI();
-            } else if (gameMode === 'higher_lower') {
-                startHigherLowerMode(); // This function already sets up its UI
-            } 
-
-            // Start the main duel timer
-            clearInterval(timerInterval); // Clear any previous timer
+            // Set up the initial game mode UI (always classic now)
+            setupClassicGuessModeUI();
+            
+            // Start the main duel timer (overall game time limit)
+            clearInterval(timerInterval); // Clear any previous overall timer
             timerInterval = setInterval(() => {
                 timeLeft--;
-                duelTimer.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
-                if (timeLeft <= 5) {
-                    duelTimer.style.color = '#ff0000';
-                    duelTimer.style.fontSize = '2rem';
-                    duelTimer.style.animation = 'pulse 0.5s infinite alternate';
-                } else if (timeLeft <= 10) {
-                    duelTimer.style.color = '#ff9900';
-                    duelTimer.style.fontSize = '1.9rem';
-                    duelTimer.style.animation = 'pulse 0.8s infinite alternate';
-                } else {
-                    duelTimer.style.color = '#00ff00';
-                    duelTimer.style.fontSize = '1.8rem';
-                    duelTimer.style.animation = 'pulse 1s infinite alternate';
-                }
-
-                if (timeLeft <= 3) {
-                    const urgencyFlash = document.createElement('div');
-                    urgencyFlash.style.cssText = `
-                        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                        background-color: rgba(255, 0, 0, 0.1); z-index: 999; pointer-events: none; animation: flash 0.3s;
-                    `;
-                    document.body.appendChild(urgencyFlash);
-                    setTimeout(() => urgencyFlash.remove(), 300);
-                }
-
                 if (timeLeft <= 0) {
-                    endDuel(); // End duel if time runs out
+                    clearInterval(timerInterval);
+                    // If overall time runs out, the player with more health or narrower range wins, or it's a draw
+                    // For simplicity, let's make it a draw if time runs out in turn-based.
+                    drawGame();
                 }
             }, 1000);
 
             // Initial turn setup
             currentTurn = 'player';
             updateTurnIndicator();
-            if (guessButton) guessButton.disabled = false; // Enable for player's first turn
-            if (gameMode === 'higher_lower') {
-                const higherButton = document.getElementById('higher-button');
-                const lowerButton = document.getElementById('lower-button');
-                if (higherButton) higherButton.disabled = false;
-                if (lowerButton) lowerButton.disabled = false;
-            }
+            if (guessInput) guessInput.disabled = false;
+            if (guessButton) guessButton.disabled = false;
+            startTurnTimer(); // Start the first turn timer
 
             hideLoading();
             trackEvent('duel_started', 'game', 'new_duel');
@@ -2610,6 +2646,8 @@
                 showToast('Wait for your turn!', 'error', true);
                 return;
             }
+            
+            clearTimeout(turnTimer); // Clear turn timer as guess is made
 
             const guessTime = Date.now();
             if (window.lastGuessTime) {
@@ -2631,17 +2669,19 @@
                 guessInput.addEventListener('animationend', () => {
                     guessInput.classList.remove('shake');
                 }, { once: true });
+                startTurnTimer(); // Restart timer if invalid input
                 return;
             }
 
-            currentGuessCount++;
+            guesses.player.push(guess); // Record player's guess
             playSound('guess');
             trackEvent('guess_submitted', 'duel', `Guess: ${guess}`);
 
             guessInput.classList.remove('shake', 'glow');
 
             if (guess === targetNumber) {
-                endDuel(true);
+                endDuel(true); // Player wins immediately
+                return;
             } else {
                 const distance = Math.abs(guess - targetNumber);
 
@@ -2689,19 +2729,6 @@
                 document.getElementById('duel-arena').appendChild(feedback);
                 setTimeout(() => feedback.remove(), 1500);
 
-                if (distance <= 5 && distance > 0) {
-                    playSound('nearMiss');
-                    duelResult.innerHTML = '<span style="color: #ff4500; font-size: 1.3em; font-weight: bold; animation: pulse 0.5s infinite;">SO CLOSE! 1 MORE TRY!</span>';
-
-                    const flashOverlay = document.createElement('div');
-                    flashOverlay.style.cssText = `
-                        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                        background-color: rgba(255, 0, 0, 0.2); z-index: 999; pointer-events: none; animation: flash 0.5s;
-                    `;
-                    document.body.appendChild(flashOverlay);
-                    setTimeout(() => flashOverlay.remove(), 500);
-                }
-
                 if (distance <= 10) {
                     guessInput.classList.add('glow');
                 } else {
@@ -2716,9 +2743,13 @@
                 } else {
                     duelResult.textContent = 'Too high! Try again.';
                 }
-                const healthReduction = Math.min(20, distance);
+                // Player takes fixed damage for wrong guess
                 const currentHealth = parseFloat(playerHealthFill.style.width) || 100;
-                updateHealthBar(playerHealthFill, currentHealth - healthReduction, true);
+                updateHealthBar(playerHealthFill, currentHealth - 10, true); // Player loses 10 health per wrong guess
+                if (currentHealth - 10 <= 0) {
+                    endDuel(false); // Player loses if health drops to 0
+                    return;
+                }
             }
             guessInput.value = '';
 
@@ -2744,10 +2775,18 @@
                 }
             }
             
+            // Check for draw condition after player's guess
+            if (guesses.player.length >= maxGuessesPerPlayer && guesses.opponent.length >= maxGuessesPerPlayer) {
+                drawGame();
+                return;
+            }
+
             // End player's turn, start opponent's turn
-            guessButton.disabled = true;
+            if (guessInput) guessInput.disabled = true;
+            if (guessButton) guessButton.disabled = true;
             currentTurn = 'opponent';
             updateTurnIndicator();
+            startTurnTimer(); // Start timer for opponent's turn
             setTimeout(simulateOpponentGuess, 1000); // Opponent guesses after 1 second
         }
 
@@ -2755,11 +2794,13 @@
          * Simulates the opponent's guess in Classic Guess Mode.
          */
         function simulateOpponentGuess() {
-            if (!duelInProgress) return;
+            if (!duelInProgress || currentTurn !== 'opponent') return; // Ensure it's opponent's turn
 
-            opponentGuessCount++;
+            clearTimeout(turnTimer); // Clear turn timer as opponent makes guess
+
+            guesses.opponent.push(null); // Record opponent's guess
+
             let opponentGuess;
-
             // Opponent's guessing strategy: narrow down the range
             const currentOpponentRangeSize = opponentMaxGuessRange - opponentMinGuessRange + 1;
             if (currentOpponentRangeSize <= 0) { // Should not happen if logic is correct
@@ -2775,18 +2816,20 @@
             duelResult.textContent += `\nOpponent guessed ${opponentGuess} - `;
             
             if (opponentGuess === targetNumber) {
-                endDuel(false); // Opponent wins
+                endDuel(false); // Opponent wins immediately
+                return;
             } else {
                 if (opponentGuess < targetNumber) {
                     duelResult.textContent += 'Too low!';
                     opponentMinGuessRange = Math.max(opponentMinGuessRange, opponentGuess + 1);
                 } else {
+                    duelResult.textContent += 'Too high!';
                     opponentMaxGuessRange = Math.min(opponentMaxGuessRange, opponentGuess - 1);
                 }
-                const distance = Math.abs(opponentGuess - targetNumber);
-                // Opponent takes damage if their guess is wrong
-                updateHealthBar(opponentHealthFill, parseFloat(opponentHealthFill.style.width) - Math.min(20, distance), false);
-                if (parseFloat(opponentHealthFill.style.width) <= 0) {
+                // Opponent takes fixed damage for wrong guess
+                const currentHealth = parseFloat(opponentHealthFill.style.width) || 100;
+                updateHealthBar(opponentHealthFill, currentHealth - 10, false); // Opponent loses 10 health per wrong guess
+                if (currentHealth - 10 <= 0) {
                     endDuel(true); // Player wins if opponent health drops to 0
                     return;
                 }
@@ -2795,191 +2838,18 @@
             updateGuessRangeIndicator(opponentMinGuessRange, opponentMaxGuessRange, opponentGuess, 'opponent');
             document.getElementById('opponent-range-text').textContent = `${opponentMinGuessRange} - ${opponentMaxGuessRange}`;
 
+            // Check for draw condition after opponent's guess
+            if (guesses.player.length >= maxGuessesPerPlayer && guesses.opponent.length >= maxGuessesPerPlayer) {
+                drawGame();
+                return;
+            }
+
             // End opponent's turn, start player's turn
             currentTurn = 'player';
             updateTurnIndicator();
+            if (guessInput) guessInput.disabled = false;
             if (guessButton) guessButton.disabled = false;
-        }
-
-        // Higher or Lower Mode Logic
-        /**
-         * Initializes and sets up the UI for Higher or Lower Mode.
-         */
-        function startHigherLowerMode() {
-            gameMode = 'higher_lower';
-            targetNumber = Math.floor(Math.random() * 100) + 1;
-            playerRange = { min: 1, max: 100 };
-            opponentRange = { min: 1, max: 100 };
-            duelStatus.textContent = 'Higher or Lower Mode: Narrow your range to find the number!';
-            
-            // Dynamically set up the guess section for Higher/Lower
-            guessSection.innerHTML = `
-                <div id="player-range-display">
-                    <p>Your Range: <span id="player-range-text">1 - 100</span></p>
-                    <div class="guess-range-container" id="player-guess-range-indicator">
-                        <div class="guess-range-fill" id="player-guess-range-fill"></div>
-                    </div>
-                </div>
-                <div id="opponent-range-display" style="margin-top: 1rem;">
-                    <p>Opponent Range: <span id="opponent-range-text">1 - 100</span></p>
-                    <div class="guess-range-container" id="opponent-guess-range-indicator">
-                        <div class="guess-range-fill" id="opponent-guess-range-fill" style="background: linear-gradient(to right, #ff4500, #ff0000);"></div>
-                    </div>
-                </div>
-                <div style="margin-top: 1.5rem;">
-                    <button id="higher-button" aria-label="Guess the number is higher than your current midpoint" style="padding: 0.5rem 1rem; background: #00ff00; color: #000; border: none; border-radius: 5px; margin-right: 0.5rem;">Higher</button>
-                    <button id="lower-button" aria-label="Guess the number is lower than your current midpoint" style="padding: 0.5rem 1rem; background: #ff4500; color: #fff; border: none; border-radius: 5px;">Lower</button>
-                </div>
-            `;
-
-            // Re-get references to the new buttons and elements
-            const higherButton = document.getElementById('higher-button');
-            const lowerButton = document.getElementById('lower-button');
-            const playerRangeText = document.getElementById('player-range-text');
-            const opponentRangeText = document.getElementById('opponent-range-text');
-            const playerRangeFill = document.getElementById('player-guess-range-fill');
-            const opponentRangeFill = document.getElementById('opponent-guess-range-fill');
-
-            // Helper function to update a range indicator's visual fill and text
-            function updateRangeIndicatorVisuals(range, fillElement, textElement) {
-                const totalRange = 100;
-                const fillWidth = ((range.max - range.min + 1) / totalRange) * 100; // +1 to include both ends
-                const fillLeft = ((range.min - 1) / totalRange) * 100;
-                
-                fillElement.style.width = `${fillWidth}%`;
-                fillElement.style.left = `${fillLeft}%`;
-                textElement.textContent = `${range.min} - ${range.max}`;
-            }
-
-            // Initial updates for both ranges
-            updateRangeIndicatorVisuals(playerRange, playerRangeFill, playerRangeText);
-            updateRangeIndicatorVisuals(opponentRange, opponentRangeFill, opponentRangeText);
-
-            // Attach event listeners for Higher/Lower buttons
-            higherButton.addEventListener('click', () => handleHigherLowerGuess(true, higherButton, lowerButton, playerRangeFill, playerRangeText));
-            lowerButton.addEventListener('click', () => handleHigherLowerGuess(false, higherButton, lowerButton, playerRangeFill, playerRangeText));
-
-            // Ensure buttons are enabled for player's first turn
-            higherButton.disabled = false;
-            lowerButton.disabled = false;
-        }
-
-        /**
-         * Handles a player's guess in Higher or Lower Mode.
-         * @param {boolean} isHigher - True if player guessed 'Higher', false for 'Lower'.
-         * @param {HTMLElement} higherButton - Reference to the Higher button.
-         * @param {HTMLElement} lowerButton - Reference to the Lower button.
-         * @param {HTMLElement} playerRangeFill - Player's range fill element.
-         * @param {HTMLElement} playerRangeText - Player's range text element.
-         */
-        function handleHigherLowerGuess(isHigher, higherButton, lowerButton, playerRangeFill, playerRangeText) {
-            if (currentTurn !== 'player' || !duelInProgress) {
-                showToast('Wait for your turn!', 'error', true);
-                return;
-            }
-
-            const midpoint = Math.floor((playerRange.min + playerRange.max) / 2);
-            let correctGuess = false;
-
-            if (isHigher) {
-                if (targetNumber > midpoint) {
-                    playerRange.min = midpoint + 1;
-                    duelResult.textContent = `Correct! Number is higher than ${midpoint}.`;
-                    correctGuess = true;
-                } else {
-                    playerRange.max = midpoint;
-                    duelResult.textContent = `Wrong! Number is lower than ${midpoint}.`;
-                }
-            } else { // isLower
-                if (targetNumber < midpoint) {
-                    playerRange.max = midpoint - 1;
-                    duelResult.textContent = `Correct! Number is lower than ${midpoint}.`;
-                    correctGuess = true;
-                } else {
-                    playerRange.min = midpoint;
-                    duelResult.textContent = `Wrong! Number is higher than ${midpoint}.`;
-                }
-            }
-
-            if (correctGuess) {
-                playSound('guess');
-            } else {
-                playSound('lose');
-                updateHealthBar(playerHealthFill, parseFloat(playerHealthFill.style.width) - 10, true);
-                if (parseFloat(playerHealthFill.style.width) <= 0) {
-                    endDuel(false); // Player loses if health drops to 0
-                    return;
-                }
-            }
-
-            // Check if player found the exact number
-            if (playerRange.min === targetNumber && playerRange.max === targetNumber) {
-                endDuel(true); // Player wins
-                return;
-            }
-
-            // Update player's range visuals
-            updateRangeIndicatorVisuals(playerRange, playerRangeFill, playerRangeText);
-
-            // End player's turn, start opponent's turn
-            higherButton.disabled = true;
-            lowerButton.disabled = true;
-            currentTurn = 'opponent';
-            updateTurnIndicator();
-            setTimeout(() => simulateOpponentHigherLowerGuess(document.getElementById('opponent-guess-range-fill'), document.getElementById('opponent-range-text')), 1000);
-        }
-
-        /**
-         * Simulates opponent's guess in Higher or Lower Mode.
-         * @param {HTMLElement} opponentRangeFill - Opponent's range fill element.
-         * @param {HTMLElement} opponentRangeText - Opponent's range text element.
-         */
-        function simulateOpponentHigherLowerGuess(opponentRangeFill, opponentRangeText) {
-            if (!duelInProgress) return;
-
-            const midpoint = Math.floor((opponentRange.min + opponentRange.max) / 2);
-            let opponentCorrectGuess = false;
-            let isHigherGuess = false;
-
-            // Opponent's strategy: always guess towards the target number
-            if (targetNumber > midpoint) {
-                opponentRange.min = midpoint + 1;
-                duelResult.textContent += `\nOpponent: Correct! Number is higher than ${midpoint}.`;
-                opponentCorrectGuess = true;
-                isHigherGuess = true;
-            } else if (targetNumber < midpoint) {
-                opponentRange.max = midpoint - 1;
-                duelResult.textContent += `\nOpponent: Correct! Number is lower than ${midpoint}.`;
-                opponentCorrectGuess = true;
-                isHigherGuess = false;
-            } else { // Opponent guessed the exact number
-                opponentRange.min = targetNumber;
-                opponentRange.max = targetNumber;
-                opponentCorrectGuess = true;
-            }
-            
-            if (!opponentCorrectGuess) { // If opponent guessed wrong (shouldn't happen with optimal strategy)
-                updateHealthBar(opponentHealthFill, parseFloat(opponentHealthFill.style.width) - 10, false);
-                if (parseFloat(opponentHealthFill.style.width) <= 0) {
-                    endDuel(true); // Player wins if opponent health drops to 0
-                    return;
-                }
-            }
-
-            // Check if opponent found the exact number
-            if (opponentRange.min === targetNumber && opponentRange.max === targetNumber) {
-                endDuel(false); // Opponent wins
-                return;
-            }
-
-            // Update opponent's range visuals
-            updateRangeIndicatorVisuals(opponentRange, opponentRangeFill, opponentRangeText);
-
-            // End opponent's turn, start player's turn
-            currentTurn = 'player';
-            updateTurnIndicator();
-            document.getElementById('higher-button').disabled = false;
-            document.getElementById('lower-button').disabled = false;
+            startTurnTimer(); // Start timer for player's turn
         }
 
 
@@ -3276,32 +3146,35 @@
             onboardingModal.style.display = 'none';
             duelStatus.textContent = 'Demo Mode: Guess the number!';
             stakeSection.style.display = 'none'; // Hide stake section in demo
-            timeLeft = 15;
-            targetNumber = 50; // Fixed for demo
+            timeLeft = 15; // Overall demo timer
             duelTimer.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
             showToast('Try guessing between 1 and 100!', 'success', true);
             currentGuessCount = 0;
+            guesses = { player: [], opponent: [] }; // Reset guesses for demo
+            currentTurn = 'player'; // Player starts in demo
 
             // Setup classic guess mode UI for demo
             setupClassicGuessModeUI();
             if (guessInput) guessInput.value = ''; // Clear input
             if (guessButton) guessButton.disabled = false; // Enable for demo
 
-            clearInterval(timerInterval); // Clear any existing timer
+            clearInterval(timerInterval); // Clear any existing overall timer
             timerInterval = setInterval(() => {
                 timeLeft--;
                 duelTimer.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
+                    clearTimeout(turnTimer); // Clear turn timer for demo
                     showToast('Demo ended! Connect your wallet to play for real.', 'success', true);
                     duelStatus.textContent = 'Waiting for opponent...';
                     guessSection.style.display = 'none';
                     if (!isWalletConnected) {
-                        if (guessButton) guessButton.disabled = true; // Disable after demo
                         if (guessInput) guessInput.disabled = true;
+                        if (guessButton) guessButton.disabled = true;
                     }
                 }
             }, 1000);
+            startTurnTimer(); // Start the first turn timer for demo
         }
 
         // --- Initialization ---
@@ -3310,7 +3183,7 @@
         setInterval(checkNetworkStatus, 30000);
 
         // Simulate spectator count update
-        setInterval(updateLiveStatusBar, 10000); // Updated to use liveStatusBar
+        setInterval(updateLiveStatusBar, 10000);
         updateLiveStatusBar();
 
         // Initialize Profile
@@ -3330,7 +3203,7 @@
         setTimeout(() => queueNotification('lastWin', {}), 3000);
 
         // Update active guesser count frequently
-        setInterval(updateGuessPill, 1000); // Updated to use guessPill
+        setInterval(updateGuessPill, 1000);
         updateGuessPill();
 
         // Add jackpot button handler
@@ -3525,69 +3398,21 @@
             trackEvent('demo_duel_started', 'onboarding', 'button_click');
         });
 
-        // Game Mode Toggle - Now only cycles between Classic and Higher/Lower
-        const modeToggle = document.getElementById('mode-toggle');
-        modeToggle.addEventListener('click', () => {
-            // Clear any existing turn timers when switching modes (though not used in these two modes)
-            clearInterval(turnTimer); 
-
-            if (gameMode === 'guess') {
-                gameMode = 'higher_lower';
-                modeToggle.textContent = 'Switch to Classic Guess Mode';
-                startHigherLowerMode();
-            } else if (gameMode === 'higher_lower') {
-                gameMode = 'guess';
-                modeToggle.textContent = 'Switch to Higher/Lower Mode';
-                setupClassicGuessModeUI(); // Revert to classic guess UI
+        // Remove mode-toggle button as per request
+        document.addEventListener('DOMContentLoaded', () => {
+            const modeToggle = document.getElementById('mode-toggle');
+            if (modeToggle) {
+                modeToggle.remove();
             }
-            // Reset common game state variables for new mode
-            duelInProgress = true; // Assume duel starts with mode switch
-            timeLeft = 30; // Reset timer
-            duelTimer.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
-            targetNumber = Math.floor(Math.random() * 100) + 1;
-            currentGuessCount = 0;
-            opponentGuessCount = 0;
-            duelResult.textContent = '';
-
-            // Reset ranges for new mode
-            minGuessRange = 1;
-            maxGuessRange = 100;
-            opponentMinGuessRange = 1;
-            opponentMaxGuessRange = 100;
-            playerRange = { min: 1, max: 100 }; // For Higher/Lower
-            opponentRange = { min: 1, max: 100 }; // For Higher/Lower
-
-            currentTurn = 'player'; // Player always starts
-            updateTurnIndicator();
-            guessSection.style.display = 'block'; // Ensure guess section is visible
-            
-            // Re-enable buttons based on the new mode's initial state
-            if (gameMode === 'guess') {
-                if (guessButton) guessButton.disabled = false;
-            } else if (gameMode === 'higher_lower') {
-                const higherButton = document.getElementById('higher-button');
-                const lowerButton = document.getElementById('lower-button');
-                if (higherButton) higherButton.disabled = false;
-                if (lowerButton) lowerButton.disabled = false;
-            }
-            updateGuessPill(); // Update guess pill with new mode
         });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            // Spacebar for guess/higher/lower button
+            // Spacebar for guess button
             if (e.code === 'Space' && duelInProgress && currentTurn === 'player') {
                 e.preventDefault(); // Prevent scrolling
                 if (gameMode === 'guess' && guessInput && guessButton && !guessButton.disabled) {
                     guessButton.click();
-                } else if (gameMode === 'higher_lower') {
-                    const higherButton = document.getElementById('higher-button');
-                    const lowerButton = document.getElementById('lower-button');
-                    if (higherButton && !higherButton.disabled) {
-                        higherButton.click(); // Default to higher for space, or could be last clicked
-                    } else if (lowerButton && !lowerButton.disabled) {
-                        lowerButton.click();
-                    }
                 }
             }
             // H for help button
@@ -3625,22 +3450,8 @@
             helpButton.click(); // Trigger main help button logic
         });
 
-        // Touch event handling for buttons (Higher/Lower mode)
+        // Touch event handling for buttons (only guess button remains)
         document.addEventListener('DOMContentLoaded', () => {
-            const higherButton = document.getElementById('higher-button');
-            const lowerButton = document.getElementById('lower-button');
-            if (higherButton) {
-                higherButton.addEventListener('touchstart', function(e) {
-                    e.preventDefault(); // Prevent scrolling while tapping
-                    this.click(); // Trigger click event
-                });
-            }
-            if (lowerButton) {
-                lowerButton.addEventListener('touchstart', function(e) {
-                    e.preventDefault(); // Prevent scrolling while tapping
-                    this.click(); // Trigger click event
-                });
-            }
              if (guessButton) { // For classic mode guess button
                 guessButton.addEventListener('touchstart', function(e) {
                     e.preventDefault();
