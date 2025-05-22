@@ -261,25 +261,92 @@
             flex-grow: 1; /* Allows title to take available space */
         }
 
-        /* Header Buttons Container */
+        /* Header Buttons Container - Hidden on mobile, replaced by toggle */
         .header-buttons {
             display: flex;
             gap: 1rem;
         }
+        @media (max-width: 768px) {
+            .header-buttons {
+                display: none; /* Hide individual buttons on mobile */
+            }
+        }
 
-        /* Sound Control Button */
-        #sound-control, #profile-button {
+        /* Header Menu Toggle for Mobile */
+        #header-menu-toggle {
             background: none;
             border: none;
             color: #00ff00;
             font-size: 1.5rem;
             cursor: pointer;
-            transition: color 0.3s;
+            display: none; /* Hidden on desktop */
+        }
+        @media (max-width: 768px) {
+            #header-menu-toggle {
+                display: block; /* Show on mobile */
+            }
         }
 
-        #sound-control:hover, #profile-button:hover {
-            color: #00cc00;
+        /* Header Dropdown Menu */
+        #header-dropdown {
+            position: fixed;
+            top: 0; /* Adjusted to cover full screen */
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9); /* Darker overlay */
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            border: none; /* Remove modal-content border */
+            box-shadow: none; /* Remove modal-content shadow */
+            border-radius: 0; /* Remove modal-content border-radius */
         }
+        #header-dropdown button, #header-dropdown input[type="range"] {
+            width: 80%;
+            max-width: 300px;
+            padding: 15px;
+            font-size: 1.2rem;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-align: center;
+        }
+        #header-dropdown button:hover {
+            background: #00cc00;
+        }
+        #header-dropdown input[type="range"] {
+            background: #333;
+            height: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 5px;
+        }
+        #header-dropdown input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00ff00;
+            cursor: pointer;
+        }
+        #header-dropdown input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00ff00;
+            cursor: pointer;
+        }
+
 
         /* Wallet Connection */
         #wallet-section {
@@ -405,6 +472,18 @@
             transition: transform 0.3s ease-out; /* For victory/defeat animation */
             position: relative; /* For streak badge */
         }
+
+        /* Player Card Pop */
+        #player-card-you {
+            box-shadow: 0 0 12px #00ff00;
+        }
+        #player-card-opponent {
+            box-shadow: 0 0 12px #ff4500;
+        }
+        .vs-badge {
+            margin: 10px 0; /* Adjusted margin */
+        }
+
 
         .player-card.winner {
             transform: scale(1.05);
@@ -942,15 +1021,25 @@
                 padding: 5px;
                 min-height: 300px;
             }
-            #live-badge {
+            /* Merged Live Badge + Spectator Count */
+            .live-status-bar {
+                display: block; /* Ensure it's block on mobile */
+                position: absolute;
                 top: 5px;
-                left: 5px;
-                font-size: 0.8rem;
-                padding: 3px 6px;
-                max-width: 90%; /* Prevent elements from being cut off */
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.7);
+                color: #ff4500;
+                padding: 6px 12px;
+                font-weight: bold;
+                font-size: 0.9rem;
+                border-radius: 8px;
+                white-space: nowrap; /* Prevent wrapping */
+                max-width: 90%; /* Ensure it fits */
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+
             .guess-feedback {
                 top: 50%;
                 font-size: clamp(0.8rem, 3vw, 1.5rem);
@@ -958,15 +1047,20 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
-            #active-guessers {
-                bottom: 5px;
-                right: 5px;
-                font-size: 0.7rem;
-                padding: 3px 6px;
-                max-width: 90%; /* Prevent elements from being cut off */
-                overflow: hidden;
-                text-overflow: ellipsis;
+            /* Guessing Status Bubble */
+            .guess-pill {
+                position: fixed;
+                bottom: 60px;
+                right: 10px;
+                background: #ff4500;
+                color: white;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 0.75rem;
+                animation: pulse 1.5s infinite;
+                z-index: 90; /* Ensure it's above other content but below modals */
             }
+
             #stake-amount, #guess-input, #guess-button {
                 font-size: 0.9rem;
                 padding: 6px;
@@ -995,7 +1089,7 @@
                 font-size: 0.9rem;
             }
             /* Stack elements vertically within duel arena */
-            #duel-arena > *:not(.player-cards):not(#duel-timer):not(#turn-indicator):not(#live-badge):not(#spectator-count):not(.multiplier-badge):not(#active-guessers) {
+            #duel-arena > *:not(.player-cards):not(#duel-timer):not(#turn-indicator):not(.live-status-bar):not(.multiplier-badge):not(.guess-pill) {
                 display: block;
                 margin-bottom: 10px;
             }
@@ -1006,6 +1100,12 @@
             animation: none !important;
             transition: none !important;
         }
+
+        /* VIP Room Blur */
+        #vip-room-1-lock, #vip-room-2-lock, #vip-room-3-lock {
+            backdrop-filter: blur(3px);
+            color: white;
+        }
     </style>
 </head>
 <body class="gradient-bg">
@@ -1013,6 +1113,9 @@
 
     <header>
         <h1>SolDuel - Degen Dueling Arena</h1>
+        <button id="header-menu-toggle" aria-label="Open menu">
+            <i class="fas fa-bars"></i>
+        </button>
         <div class="header-buttons">
             <button id="profile-button" aria-label="Open profile">
                 <i class="fas fa-user"></i>
@@ -1026,6 +1129,21 @@
             </button>
         </div>
     </header>
+
+    <div id="header-dropdown" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <button id="close-header-dropdown" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+            <button id="open-profile-from-dropdown">👤 Profile</button>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 80%; max-width: 300px; margin: 10px auto;">
+                <i class="fas fa-volume-up" id="sound-icon-dropdown" style="color: #00ff00;"></i>
+                <input type="range" id="volume-slider-dropdown" min="0" max="1" step="0.1" value="1" aria-label="Volume slider">
+            </div>
+            <button id="open-help-from-dropdown">❓ Help</button>
+        </div>
+    </div>
+
 
     <div id="fomo-banner" style="background: linear-gradient(45deg, #ff4500, darkred); color: white; text-align: center; padding: 8px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px;">
         <span>🔥 MEGA JACKPOT EVENT ENDS IN:</span>
@@ -1047,21 +1165,19 @@
     <main>
         <section id="duel-arena" class="neon-border">
             <h2>Live Duel</h2>
-            <div id="live-badge" style="position: absolute; top: 10px; left: 10px; background: rgba(255, 0, 0, 0.8); color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; animation: pulse 0.8s infinite alternate;">LIVE</div>
-            <div id="spectator-count" style="position: absolute; top: 10px; right: 10px; font-size: 0.9rem; color: #ff4500;">
-                🔥 42 degens watching!
-            </div>
+            <div class="live-status-bar">🔴 LIVE · 32 degens watching</div>
+            
             <div id="turn-indicator" style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: #00ff00; color: #000; padding: 5px 15px; border-radius: 5px; font-weight: bold; display: none;"></div>
             <div class="player-cards">
                 <div class="player-card" id="player-card-you">
-                    <img src="https://placehold.co/60x60/00ff00/000000?text=YOU" class="avatar" alt="Your Avatar" loading="lazy">
+                    <img loading="lazy" src="https://placehold.co/60x60/00ff00/000000?text=YOU" class="avatar" alt="Your Avatar">
                     <span class="username">@You</span>
                     <div class="health-bar"><div class="health-bar-fill" id="player-health-fill"></div></div>
                     <div class="streak-badge" id="player-streak-badge" style="display: none; position: absolute; top: -15px; right: -15px; background: linear-gradient(45deg, #ff4500, #ff0000); color: white; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; font-size: 0.8rem; font-weight: bold; box-shadow: 0 0 10px rgba(255, 69, 0, 0.7); animation: pulse 1s infinite alternate;">🔥3</div>
                 </div>
                 <div class="vs-badge">VS</div>
                 <div class="player-card" id="player-card-opponent">
-                    <img src="https://placehold.co/60x60/ff4500/ffffff?text=OPP" class="avatar" alt="Opponent Avatar" loading="lazy">
+                    <img loading="lazy" src="https://placehold.co/60x60/ff4500/ffffff?text=OPP" class="avatar" alt="Opponent Avatar">
                     <span class="username">@CryptoChad</span>
                     <div class="health-bar"><div class="health-bar-fill" id="opponent-health-fill"></div></div>
                 </div>
@@ -1159,7 +1275,7 @@
                 <label for="profile-avatar">Avatar:</label>
                 <input type="file" id="profile-avatar" accept="image/*">
                 <div id="avatar-preview">
-                    <img id="avatar-img" src="https://placehold.co/60x60/00ff00/000000?text=YOU" alt="Avatar Preview">
+                    <img loading="lazy" id="avatar-img" src="https://placehold.co/60x60/00ff00/000000?text=YOU" alt="Avatar Preview">
                 </div>
                 <label for="profile-bio">Bio:</label>
                 <textarea id="profile-bio" maxlength="100" placeholder="Tell us about yourself..."></textarea>
@@ -1174,7 +1290,7 @@
     <div id="public-profile-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="public-profile-username"></h3>
-            <img id="public-profile-avatar" src="" alt="User Avatar">
+            <img loading="lazy" id="public-profile-avatar" src="" alt="User Avatar">
             <p id="public-profile-bio"></p>
             <div style="text-align: left;">
                 <p>Level: <span id="public-profile-level"></span></p>
@@ -1211,10 +1327,20 @@
         </div>
     </div>
 
+    <div id="daily-bonus-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Daily Bonus!</h3>
+            <p>Claim your daily reward of <span style="color: #00ff00; font-weight: bold;">0.005 SOL</span>!</p>
+            <button id="claim-daily-bonus-button">Claim Bonus</button>
+        </div>
+    </div>
+
     <div id="level-progress-container">
         <div id="level-progress-fill"></div>
         <div id="level-progress-text">Level 1 (0%)</div>
     </div>
+
+    <div class="guess-pill">🔁 Classic | 👥 0 guessing</div>
 
     <script>
         // Simulated Solana Web3.js and Wallet Adapter (for demonstration purposes)
@@ -1281,7 +1407,6 @@
         const playerCardOpponent = document.getElementById('player-card-opponent');
         const playerHealthFill = document.getElementById('player-health-fill');
         const opponentHealthFill = document.getElementById('opponent-health-fill');
-        const spectatorCountElement = document.getElementById('spectator-count');
         
         // Profile Elements
         const profileButton = document.getElementById('profile-button');
@@ -1324,6 +1449,22 @@
         const levelProgressFill = document.getElementById('level-progress-fill');
         const levelProgressText = document.getElementById('level-progress-text');
 
+        // Header Dropdown Elements
+        const headerMenuToggle = document.getElementById('header-menu-toggle');
+        const headerDropdown = document.getElementById('header-dropdown');
+        const closeHeaderDropdown = document.getElementById('close-header-dropdown');
+        const openProfileFromDropdown = document.getElementById('open-profile-from-dropdown');
+        const volumeSliderDropdown = document.getElementById('volume-slider-dropdown');
+        const soundIconDropdown = document.getElementById('sound-icon-dropdown');
+        const openHelpFromDropdown = document.getElementById('open-help-from-dropdown');
+
+        // Merged Live Status Bar
+        const liveStatusBar = document.querySelector('.live-status-bar');
+
+        // Guessing Status Bubble
+        const guessPill = document.querySelector('.guess-pill');
+
+
         // Game State Variables
         let isWalletConnected = false;
         let duelInProgress = false;
@@ -1334,8 +1475,6 @@
         let opponentGuessCount = 0;
         let userPublicKey = null; // To store the connected wallet's public key
         let currentVolume = 1; // Initial volume for sound control
-        let hasUserInteracted = false; // New: Track if user has interacted for sound autoplay
-        let stakeAmount = parseFloat(stakeAmountSelect.value); // Initialize stake amount
         let streakProtectionAvailable = false;
         let minGuessRange = 1; // Player's current min guess range for Classic mode
         let maxGuessRange = 100; // Player's current max guess range for Classic mode
@@ -1432,6 +1571,39 @@
         }
 
         /**
+         * Shows a toast notification for errors or messages.
+         * @param {string} message - The message to display.
+         * @param {string} type - 'error' (red), 'success' (green), or 'warning' (orange).
+         * @param {boolean} forceShow - If true, shows even if enhanced notifications are off.
+         */
+        function showToast(message, type = 'error', forceShow = false) {
+            if (!userProfile.enhancedNotifications && !forceShow && type !== 'error') {
+                return; // Do not show non-error enhanced toasts if setting is off
+            }
+            const toast = document.createElement('div');
+            toast.classList.add('toast');
+            if (type === 'success') {
+                toast.style.backgroundColor = 'rgba(0, 255, 0, 0.8)';
+                toast.style.boxShadow = '0 0 10px rgba(0, 255, 0, 0.5)';
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = 'rgba(255, 165, 0, 0.8)'; /* Orange for warning */
+                toast.style.boxShadow = '0 0 10px rgba(255, 165, 0, 0.5)';
+            }
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            // Show and then hide after a delay
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10); // Small delay to trigger transition
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 3000);
+        }
+
+        /**
          * Queues a notification to be displayed.
          * @param {string} type - The type of notification (e.g., 'lastWin', 'welcomeBack', 'toast').
          * @param {object} data - Data associated with the notification.
@@ -1463,43 +1635,13 @@
                     showWelcomeBackPopup(notification.data);
                     break;
                 case 'toast':
-                    showErrorToast(notification.data.message, notification.data.type, notification.data.forceShow);
+                    showToast(notification.data.message, notification.data.type, notification.data.forceShow);
                     break;
                 // Add other notification types here
             }
 
             // Wait before showing next notification
             setTimeout(playNextNotification, 30000); // 30-second delay between major notifications
-        }
-
-        /**
-         * Shows a toast notification for errors or messages.
-         * @param {string} message - The message to display.
-         * @param {string} type - 'error' (red) or 'success' (green).
-         * @param {boolean} forceShow - If true, shows even if enhanced notifications are off.
-         */
-        function showErrorToast(message, type = 'error', forceShow = false) {
-            if (!userProfile.enhancedNotifications && !forceShow && type !== 'error') {
-                return; // Do not show non-error enhanced toasts if setting is off
-            }
-            const toast = document.createElement('div');
-            toast.classList.add('toast');
-            if (type === 'success') {
-                toast.style.backgroundColor = 'rgba(0, 255, 0, 0.8)';
-                toast.style.boxShadow = '0 0 10px rgba(0, 255, 0, 0.5)';
-            }
-            toast.textContent = message;
-            toastContainer.appendChild(toast);
-
-            // Show and then hide after a delay
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 10); // Small delay to trigger transition
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-                toast.addEventListener('transitionend', () => toast.remove());
-            }, 3000);
         }
 
         /**
@@ -1579,6 +1721,7 @@
 
             let audio = new Audio(soundUrl);
             audio.volume = currentVolume; // Set volume
+            audio.preload = 'none'; // Lazy load audio
             let panValue = 0; // Center by default
 
             switch (effect) {
@@ -1587,6 +1730,7 @@
                     if (winAmount >= 0.5) { // Crowd cheer for big wins
                         const crowdCheer = new Audio(soundEffects.crowd_cheer[0]);
                         crowdCheer.volume = currentVolume; // Set volume for crowd cheer
+                        crowdCheer.preload = 'none'; // Lazy load audio
                         crowdCheer.play().catch(e => console.error("Error playing crowd cheer:", e));
                     }
                     break;
@@ -1621,6 +1765,7 @@
                 backgroundAudio = new Audio(soundEffects.background_loop[0]);
                 backgroundAudio.loop = true;
                 backgroundAudio.volume = 0.2 * currentVolume; // Adjust background volume by slider
+                backgroundAudio.preload = 'none'; // Lazy load audio
             }
             backgroundAudio.play().catch(e => console.error("Error playing background music:", e));
         }
@@ -1670,54 +1815,32 @@
         }
 
         /**
-         * Simulates spectator count.
+         * Updates the live status bar with spectator count.
          */
-        const updateSpectatorCount = debounce(() => {
+        const updateLiveStatusBar = debounce(() => {
             const count = Math.floor(Math.random() * 50) + 20;
-            spectatorCountElement.textContent = `🔥 ${count} degens watching!`;
+            liveStatusBar.textContent = `🔴 LIVE · ${count} degens watching`;
         }, 5000); // Debounce to prevent frequent DOM updates
 
         /**
-         * Updates the active guesser count, optionally based on enhanced notifications setting.
+         * Updates the guessing status bubble, optionally based on enhanced notifications setting.
          */
-        function updateActiveGuesserCount() {
+        function updateGuessPill() {
             if (!userProfile.enhancedNotifications) {
-                const activeCountElement = document.getElementById('active-guessers');
-                if (activeCountElement) activeCountElement.remove();
+                if (guessPill) guessPill.style.display = 'none';
                 return;
             }
 
-            let activeCountElement = document.getElementById('active-guessers');
-            if (!activeCountElement) {
-                activeCountElement = document.createElement('div');
-                activeCountElement.id = 'active-guessers';
-                activeCountElement.style.cssText = `
-                    position: absolute;
-                    bottom: 10px;
-                    right: 10px;
-                    background: rgba(255, 0, 0, 0.8);
-                    color: white;
-                    padding: 5px 10px;
-                    border-radius: 5px;
-                    font-size: 0.9rem;
-                    font-weight: bold;
-                    animation: pulse 0.8s infinite alternate;
-                `;
-                document.getElementById('duel-arena').appendChild(activeCountElement);
-            }
-
-            const baseNumber = 20;
-            const currentTime = new Date();
-            const fluctuation = Math.sin(currentTime.getSeconds() / 10) * 8;
-            const activeGuessers = Math.max(1, Math.floor(baseNumber + fluctuation));
-
-            if (duelInProgress && timeLeft <= 10) {
-                const urgencyBoost = Math.floor((10 - timeLeft) * 2.5);
-                activeCountElement.textContent = `⚡ ${activeGuessers + urgencyBoost} PEOPLE GUESSING NOW!`;
-                activeCountElement.style.background = 'rgba(255, 0, 0, 0.9)';
-            } else {
-                activeCountElement.textContent = `👥 ${activeGuessers} people guessing now`;
-                activeCountElement.style.background = 'rgba(255, 0, 0, 0.8)';
+            if (guessPill) {
+                guessPill.style.display = 'block';
+                const activeGuessers = Math.floor(Math.random() * 20) + 5; // Simulate active guessers
+                let modeText = '';
+                if (gameMode === 'guess') {
+                    modeText = 'Classic';
+                } else if (gameMode === 'higher_lower') {
+                    modeText = 'Higher/Lower';
+                }
+                guessPill.textContent = `🔁 ${modeText} | 👥 ${activeGuessers} guessing`;
             }
         }
 
@@ -1815,6 +1938,33 @@
                 welcomeBackModal.remove();
                 startDuel();
             });
+        }
+
+        /**
+         * Shows a modal by its ID.
+         * @param {string} modalId - The ID of the modal element.
+         */
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+                // Find first focusable element and focus it for accessibility
+                const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (focusableElements.length > 0) {
+                    focusableElements[0].focus();
+                }
+            }
+        }
+
+        /**
+         * Hides a modal by its ID.
+         * @param {string} modalId - The ID of the modal element.
+         */
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
 
         /**
@@ -2127,14 +2277,11 @@
 
         // Wallet Connection
         connectWalletButton.addEventListener('click', async () => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
             await connectWallet();
         });
 
-        // Sound Control (Volume Slider)
+        // Volume Slider (Main)
         volumeSlider.addEventListener('input', () => {
-            hasUserInteracted = true; // User interaction for sound
             currentVolume = parseFloat(volumeSlider.value);
             if (backgroundAudio) {
                 backgroundAudio.volume = 0.2 * currentVolume;
@@ -2150,13 +2297,29 @@
             trackEvent('set_volume', 'settings', currentVolume);
         });
 
-        // Help Button
+        // Volume Slider (Dropdown)
+        volumeSliderDropdown.addEventListener('input', () => {
+            currentVolume = parseFloat(volumeSliderDropdown.value);
+            // Sync main slider with dropdown slider
+            volumeSlider.value = currentVolume;
+            if (backgroundAudio) {
+                backgroundAudio.volume = 0.2 * currentVolume;
+            }
+            // Update sound icon based on volume
+            if (currentVolume === 0) {
+                soundIconDropdown.classList.remove('fa-volume-up');
+                soundIconDropdown.classList.add('fa-volume-mute');
+            } else {
+                soundIconDropdown.classList.remove('fa-volume-mute');
+                soundIconDropdown.classList.add('fa-volume-up');
+            }
+            trackEvent('set_volume', 'settings', currentVolume);
+        });
+
+
+        // Help Button (Main)
         helpButton.addEventListener('click', () => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
-            onboardingModal.style.display = 'flex';
-            // Ensure keyboard focus for accessibility
-            document.getElementById('start-onboarding-button').focus();
+            showModal('onboarding-modal');
         });
 
         // Stake Amount Select
@@ -2169,6 +2332,7 @@
                     setTimeout(() => {
                         const chipSound = new Audio('https://www.soundjay.com/buttons/sounds/button-09a.mp3');
                         chipSound.volume = (0.7 + (Math.random() * 0.3)) * currentVolume; // Adjust by main volume
+                        chipSound.preload = 'none'; // Lazy load audio
                         chipSound.play().catch(e => console.error("Error playing chip sound:", e));
                     }, i * 80);
                 }
@@ -2210,12 +2374,12 @@
                 updateBalanceDisplay(balance);
                 updateNetworkStatus(true);
                 playSound('connect');
-                queueNotification('toast', { message: 'Wallet connected successfully!', type: 'success', forceShow: true });
+                showToast('Wallet connected successfully!', 'success', true);
                 trackEvent('wallet_connected', 'wallet', 'success');
                 startDuel();
             } catch (error) {
                 console.error('Wallet connection failed:', error);
-                queueNotification('toast', { message: 'Wallet connection failed: ' + error.message, type: 'error', forceShow: true });
+                showToast('Wallet connection failed: ' + error.message, 'error', true);
                 updateNetworkStatus(false);
                 isWalletConnected = false;
                 connectWalletButton.style.display = 'block';
@@ -2251,7 +2415,7 @@
          */
         function startDuel() {
             if (!isWalletConnected) {
-                queueNotification('toast', { message: 'Please connect your wallet to start a duel.', type: 'error', forceShow: true });
+                showToast('Please connect your wallet to start a duel.', 'error', true);
                 return;
             }
             showLoading();
@@ -2289,7 +2453,7 @@
             if (specialMultiplier) {
                 const selectedMultiplier = rewardMultipliers[Math.floor(Math.random() * rewardMultipliers.length)];
                 window.currentPayoutMultiplier = selectedMultiplier;
-                queueNotification('toast', { message: `🎰 LUCKY MULTIPLIER: ${selectedMultiplier}x ACTIVATED!`, type: 'success' });
+                showToast(`🎰 LUCKY MULTIPLIER: ${selectedMultiplier}x ACTIVATED!`, 'success');
 
                 const multiplierBadge = document.createElement('div');
                 multiplierBadge.className = 'multiplier-badge';
@@ -2342,7 +2506,7 @@
 
                 setTimeout(() => {
                     if (duelInProgress && currentGuessCount === 0) {
-                        queueNotification('toast', { message: "Hint: Try guessing 50!", type: "success" });
+                        showToast("Hint: Try guessing 50!", "success");
                     }
                 }, 20000);
             }
@@ -2443,7 +2607,7 @@
          */
         function handleGuessButtonClick() {
             if (currentTurn !== 'player' || !duelInProgress) {
-                queueNotification('toast', { message: 'Wait for your turn!', type: 'error', forceShow: true });
+                showToast('Wait for your turn!', 'error', true);
                 return;
             }
 
@@ -2454,7 +2618,7 @@
                     (userProfile.behavioralData.timeSpentThinking + thinkingTime) / 2;
 
                 if (thinkingTime > 5 && Math.random() < 0.7) {
-                    queueNotification('toast', { message: "Trust your gut! Quick guessers often win more!", type: "success" });
+                    showToast("Trust your gut! Quick guessers often win more!", "success");
                 }
             }
             window.lastGuessTime = guessTime;
@@ -2462,7 +2626,7 @@
             const guess = parseInt(guessInput.value);
 
             if (isNaN(guess) || guess < 1 || guess > 100) {
-                queueNotification('toast', { message: 'Please enter a number between 1 and 100.', type: 'error', forceShow: true });
+                showToast('Please enter a number between 1 and 100.', 'error', true);
                 guessInput.classList.add('shake');
                 guessInput.addEventListener('animationend', () => {
                     guessInput.classList.remove('shake');
@@ -2480,6 +2644,14 @@
                 endDuel(true);
             } else {
                 const distance = Math.abs(guess - targetNumber);
+
+                // Near Miss Vibration Trigger
+                if (distance === 1) {
+                    showToast("You were SO close!", "warning");
+                    if (navigator.vibrate) {
+                        navigator.vibrate(200); // Vibrate for 200ms
+                    }
+                }
 
                 // Update player's guess range
                 if (guess < targetNumber) {
@@ -2552,7 +2724,7 @@
 
             if (stakeAmount === userProfile.behavioralData.preferredStakeAmount) {
                 if (Math.random() < 0.3 && stakeAmount < 0.1) {
-                    queueNotification('toast', { message: `Players betting ${(stakeAmount * 2).toFixed(2)} SOL often see increased win rates!`, type: "success" });
+                    showToast(`Players betting ${(stakeAmount * 2).toFixed(2)} SOL often see increased win rates!`, "success");
                 }
             } else {
                 userProfile.behavioralData.preferredStakeAmount = stakeAmount;
@@ -2564,6 +2736,7 @@
                     setTimeout(() => {
                         const extraHeartbeat = new Audio('https://www.soundjay.com/human/heartbeat-01a.mp3');
                         extraHeartbeat.volume = currentVolume; // Set volume
+                        extraHeartbeat.preload = 'none'; // Lazy load audio
                         extraHeartbeat.play().catch(e => console.error("Error playing heartbeat:", e));
                     }, 1200);
                     duelTimer.style.color = 'red';
@@ -2701,7 +2874,7 @@
          */
         function handleHigherLowerGuess(isHigher, higherButton, lowerButton, playerRangeFill, playerRangeText) {
             if (currentTurn !== 'player' || !duelInProgress) {
-                queueNotification('toast', { message: 'Wait for your turn!', type: 'error', forceShow: true });
+                showToast('Wait for your turn!', 'error', true);
                 return;
             }
 
@@ -2930,7 +3103,7 @@
 
                         levelUpOverlay.remove();
 
-                        queueNotification('toast', { message: `Level ${newLevel} rewards claimed!`, type: 'success' });
+                        showToast(`Level ${newLevel} rewards claimed!`, 'success');
                     });
                 }, 2000); // Delay before showing level up modal
             }
@@ -3005,27 +3178,18 @@
 
         // Open Profile Modal
         profileButton.addEventListener('click', () => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
-            if (!isWalletConnected) {
-                queueNotification('toast', { message: 'Connect your wallet to edit your profile.', type: 'error', forceShow: true });
-                return;
-            }
-            profileModal.style.display = 'flex';
-            // Ensure keyboard focus for accessibility
-            profileUsernameInput.focus();
-            trackEvent('open_profile_modal', 'profile', 'edit');
+            showModal('profile-modal');
         });
 
         // Close Profile Modal (by clicking outside or pressing ESC)
         profileModal.addEventListener('click', (e) => {
             if (e.target === profileModal) {
-                profileModal.style.display = 'none';
+                hideModal('profile-modal');
             }
         });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && profileModal.style.display === 'flex') {
-                profileModal.style.display = 'none';
+                hideModal('profile-modal');
             }
         });
 
@@ -3049,7 +3213,7 @@
             const newEnhancedNotifications = toggleEnhancedNotifications.checked;
 
             if (!newUsername) {
-                queueNotification('toast', { message: 'Username cannot be empty.', type: 'error', forceShow: true });
+                showToast('Username cannot be empty.', 'error', true);
                 return;
             }
 
@@ -3058,8 +3222,8 @@
             userProfile.bio = newBio;
             userProfile.enhancedNotifications = newEnhancedNotifications;
             saveProfile();
-            profileModal.style.display = 'none';
-            queueNotification('toast', { message: 'Profile updated!', type: 'success', forceShow: true });
+            hideModal('profile-modal');
+            showToast('Profile updated!', 'success', true);
             trackEvent('save_profile', 'profile', 'updated');
         });
 
@@ -3075,25 +3239,23 @@
                 publicProfileLosses.textContent = username === userProfile.username ? userProfile.losses : 5;
                 publicProfileStreak.textContent = username === userProfile.username ? userProfile.streak : 3;
                 publicProfileLevel.textContent = username === userProfile.username ? userProfile.level : 5; // Example level for opponent
-                publicProfileModal.style.display = 'flex';
-                // Ensure keyboard focus for accessibility
-                closePublicProfileButton.focus();
+                showModal('public-profile-modal');
                 trackEvent('view_public_profile', 'profile', username);
             }
         });
 
         // Close Public Profile Modal
         closePublicProfileButton.addEventListener('click', () => {
-            publicProfileModal.style.display = 'none';
+            hideModal('public-profile-modal');
         });
         publicProfileModal.addEventListener('click', (e) => {
             if (e.target === publicProfileModal) {
-                publicProfileModal.style.display = 'none';
+                hideModal('public-profile-modal');
             }
         });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && publicProfileModal.style.display === 'flex') {
-                publicProfileModal.style.display = 'none';
+                hideModal('public-profile-modal');
             }
         });
 
@@ -3104,22 +3266,20 @@
                 updateNetworkStatus(true);
             } catch (error) {
                 updateNetworkStatus(false);
-                queueNotification('toast', { message: 'Network disconnected. Please check your connection.', type: 'error', forceShow: true });
+                showToast('Network disconnected. Please check your connection.', 'error', true);
                 trackEvent('network_status', 'system', 'disconnected');
             }
         }
 
         // --- Demo Duel Logic ---
         function startDemoDuel() {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
             onboardingModal.style.display = 'none';
             duelStatus.textContent = 'Demo Mode: Guess the number!';
             stakeSection.style.display = 'none'; // Hide stake section in demo
             timeLeft = 15;
             targetNumber = 50; // Fixed for demo
             duelTimer.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
-            queueNotification('toast', { message: 'Try guessing between 1 and 100!', type: 'success', forceShow: true });
+            showToast('Try guessing between 1 and 100!', 'success', true);
             currentGuessCount = 0;
 
             // Setup classic guess mode UI for demo
@@ -3133,7 +3293,7 @@
                 duelTimer.textContent = `00:${timeLeft.toString().padStart(2, '0')}`;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    queueNotification('toast', { message: 'Demo ended! Connect your wallet to play for real.', type: 'success', forceShow: true });
+                    showToast('Demo ended! Connect your wallet to play for real.', 'success', true);
                     duelStatus.textContent = 'Waiting for opponent...';
                     guessSection.style.display = 'none';
                     if (!isWalletConnected) {
@@ -3150,16 +3310,14 @@
         setInterval(checkNetworkStatus, 30000);
 
         // Simulate spectator count update
-        setInterval(updateSpectatorCount, 10000);
-        updateSpectatorCount();
+        setInterval(updateLiveStatusBar, 10000); // Updated to use liveStatusBar
+        updateLiveStatusBar();
 
         // Initialize Profile
         loadProfile();
 
         // Emoji Picker setup
         emojiToggle.addEventListener('click', () => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
             emojiPicker.style.display = emojiPicker.style.display === 'none' ? 'block' : 'none';
             trackEvent('toggle_emoji_picker', 'chat', emojiPicker.style.display === 'block' ? 'open' : 'close');
         });
@@ -3172,13 +3330,11 @@
         setTimeout(() => queueNotification('lastWin', {}), 3000);
 
         // Update active guesser count frequently
-        setInterval(updateActiveGuesserCount, 1000);
-        updateActiveGuesserCount();
+        setInterval(updateGuessPill, 1000); // Updated to use guessPill
+        updateGuessPill();
 
         // Add jackpot button handler
         document.getElementById('jackpot-button').addEventListener('click', () => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
             if (!isWalletConnected) {
                 showTransactionModal('MEGA JACKPOT EVENT', 'Connect your wallet to join the 5 SOL MEGA JACKPOT event!<br><br>Over 100 players already participating!');
                 connectWalletButton.click();
@@ -3202,8 +3358,6 @@
         let pullThreshold = 100;
         let pullRefreshCooldown = false;
         document.addEventListener('touchstart', (e) => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
             if (window.scrollY === 0) {
                 lastY = e.touches[0].clientY;
                 isPulling = true;
@@ -3312,13 +3466,13 @@
                     if (selectedReward.value > 0) {
                         const currentBalance = parseFloat(walletBalanceDisplay.textContent.split(': ')[1]) || 0;
                         updateBalanceDisplay((currentBalance + selectedReward.value) * 1000000000);
-                        queueNotification('toast', { message: `Added ${selectedReward.value} SOL to your balance!`, type: 'success', forceShow: true });
+                        showToast(`Added ${selectedReward.value} SOL to your balance!`, 'success', true);
                     } else if (selectedReward.type === "free_entry") {
                         userProfile.freeEntryAvailable = true;
-                        queueNotification('toast', { message: 'Free entry available for your next duel!', type: 'success', forceShow: true });
+                        showToast('Free entry available for your next duel!', 'success', true);
                     } else if (selectedReward.type === "multiplier") {
                         window.bonusMultiplier = 1.5;
-                        queueNotification('toast', { message: '1.5x multiplier applied to your next win!', type: 'success', forceShow: true });
+                        showToast('1.5x multiplier applied to your next win!', 'success', true);
                     }
                     trackEvent('pull_reward_claimed', 'rewards', selectedReward.name);
                 });
@@ -3340,25 +3494,22 @@
 
         // Add click handler for VIP room upgrade button
         document.querySelector('#vip-rooms button').addEventListener('click', () => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
             showTransactionModal('VIP Access', 'Upgrade to VIP to access exclusive high-stakes rooms!<br><br>Special offer: 50% OFF today only!<br><br><button style="background: gold; color: black; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 10px; cursor: pointer; font-weight: bold;">GET VIP FOR 0.5 SOL</button>');
             trackEvent('upgrade_click', 'vip', 'rooms');
         });
 
-        // Onboarding logic
-        function checkOnboarding() {
-            const hasVisited = localStorage.getItem('solDuelFirstVisit');
-            if (!hasVisited) {
-                onboardingModal.style.display = 'flex';
-                localStorage.setItem('solDuelFirstVisit', 'true');
+        // Onboarding logic - Modified to use DOMContentLoaded and localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const seenIntro = localStorage.getItem('seenOnboarding');
+            if (!seenIntro) {
+                const onboardingModal = document.getElementById('onboarding-modal');
+                if (onboardingModal) onboardingModal.style.display = 'flex';
+                localStorage.setItem('seenOnboarding', 'true');
                 trackEvent('onboarding_start', 'onboarding', 'first_visit');
             }
-        }
+        });
 
         startOnboardingButton.addEventListener('click', () => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
             onboardingModal.style.display = 'none';
             trackEvent('onboarding_complete', 'onboarding', 'button_click');
             // Optionally, connect wallet automatically or prompt user
@@ -3370,8 +3521,6 @@
         });
 
         startDemoDuelButton.addEventListener('click', () => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
             startDemoDuel();
             trackEvent('demo_duel_started', 'onboarding', 'button_click');
         });
@@ -3379,8 +3528,6 @@
         // Game Mode Toggle - Now only cycles between Classic and Higher/Lower
         const modeToggle = document.getElementById('mode-toggle');
         modeToggle.addEventListener('click', () => {
-            hasUserInteracted = true; // User interaction for sound
-            playBackgroundMusic(); // Start background music after interaction
             // Clear any existing turn timers when switching modes (though not used in these two modes)
             clearInterval(turnTimer); 
 
@@ -3423,6 +3570,7 @@
                 if (higherButton) higherButton.disabled = false;
                 if (lowerButton) lowerButton.disabled = false;
             }
+            updateGuessPill(); // Update guess pill with new mode
         });
 
         // Keyboard shortcuts
@@ -3430,7 +3578,7 @@
             // Spacebar for guess/higher/lower button
             if (e.code === 'Space' && duelInProgress && currentTurn === 'player') {
                 e.preventDefault(); // Prevent scrolling
-                if (gameMode === 'guess' && guessInput && guessButton && !guessButton.disabled) { // Added null checks for guessInput
+                if (gameMode === 'guess' && guessInput && guessButton && !guessButton.disabled) {
                     guessButton.click();
                 } else if (gameMode === 'higher_lower') {
                     const higherButton = document.getElementById('higher-button');
@@ -3448,9 +3596,90 @@
             }
         });
 
+        // --- Mobile-Specific Event Listeners ---
+        // Header Menu Toggle
+        headerMenuToggle.addEventListener('click', () => {
+            headerDropdown.style.display = 'flex';
+            // Sync dropdown volume slider with main one
+            volumeSliderDropdown.value = volumeSlider.value;
+            if (volumeSliderDropdown.value === '0') {
+                soundIconDropdown.classList.remove('fa-volume-up');
+                soundIconDropdown.classList.add('fa-volume-mute');
+            } else {
+                soundIconDropdown.classList.remove('fa-volume-mute');
+                soundIconDropdown.classList.add('fa-volume-up');
+            }
+        });
 
-        // Initial calls
-        checkOnboarding();
+        closeHeaderDropdown.addEventListener('click', () => {
+            headerDropdown.style.display = 'none';
+        });
+
+        openProfileFromDropdown.addEventListener('click', () => {
+            hideModal('header-dropdown');
+            profileButton.click(); // Trigger main profile button logic
+        });
+
+        openHelpFromDropdown.addEventListener('click', () => {
+            hideModal('header-dropdown');
+            helpButton.click(); // Trigger main help button logic
+        });
+
+        // Touch event handling for buttons (Higher/Lower mode)
+        document.addEventListener('DOMContentLoaded', () => {
+            const higherButton = document.getElementById('higher-button');
+            const lowerButton = document.getElementById('lower-button');
+            if (higherButton) {
+                higherButton.addEventListener('touchstart', function(e) {
+                    e.preventDefault(); // Prevent scrolling while tapping
+                    this.click(); // Trigger click event
+                });
+            }
+            if (lowerButton) {
+                lowerButton.addEventListener('touchstart', function(e) {
+                    e.preventDefault(); // Prevent scrolling while tapping
+                    this.click(); // Trigger click event
+                });
+            }
+             if (guessButton) { // For classic mode guess button
+                guessButton.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    this.click();
+                });
+            }
+        });
+
+
+        // Background Music Only After Tap - Consolidated Listener
+        document.body.addEventListener("click", () => {
+            if (!hasUserInteracted) {
+                hasUserInteracted = true;
+                playBackgroundMusic();
+            }
+        }, { once: true });
+
+
+        // Daily Bonus Trigger - Check on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const lastClaimedDate = localStorage.getItem("claimedDailyBonusDate");
+            const today = new Date().toDateString();
+
+            if (!lastClaimedDate || lastClaimedDate !== today) {
+                showModal("daily-bonus-modal");
+            }
+
+            document.getElementById('claim-daily-bonus-button').addEventListener('click', () => {
+                const currentBalance = parseFloat(walletBalanceDisplay.textContent.split(': ')[1]) || 0;
+                updateBalanceDisplay((currentBalance + 0.005) * 1000000000);
+                localStorage.setItem("claimedDailyBonusDate", today);
+                hideModal("daily-bonus-modal");
+                showToast('Daily bonus claimed!', 'success', true);
+            });
+        });
+
+
+        // Initial calls (only those not handled by DOMContentLoaded)
+        // checkOnboarding(); // Now handled by DOMContentLoaded listener
         // Removed direct playSound('background_loop') here. It will be triggered by user interaction.
 
         // Implement a toggle for animations (UI for this would be in settings)
